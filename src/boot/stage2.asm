@@ -9,7 +9,12 @@ stage2main:
 
     call clearscreen
 
+    xor ah, ah
+    mov al, 0x6a
+    int 0x10
+
     mov si, welcomestring
+    mov bl, 11
     call printcstr 
     ret
 

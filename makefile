@@ -1,4 +1,4 @@
-#.SILENT:
+.SILENT:
 
 ASM_SRC_FILES := $(shell find src -name *.asm)
 ASM_OBJ_FILES := $(patsubst src/%.asm, temp/src/%.o, $(ASM_SRC_FILES) )
