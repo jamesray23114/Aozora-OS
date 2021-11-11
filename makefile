@@ -25,3 +25,11 @@ run: build
 .PHONY: debug
 debug: build
 	objdump -D -Mintel,i8086 -m i8086 -b binary out/disk.bin
+
+.PHONY: push
+push: 
+	git add .
+	echo "add message to use with commit"
+	read VAR
+	git commit -m "$VAR"
+	git push
