@@ -29,7 +29,7 @@ debug: build
 .PHONY: push
 push: 
 	git add .
-	echo "add message to use with commit"
+	printf "Add commit message: "
 	read VAR
 	git commit -m "$VAR"
 	git push
