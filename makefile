@@ -30,6 +30,5 @@ debug: build
 push: 
 	git add .
 	printf "Add commit message: "
-	read VAR
-	git commit -m "$VAR"
+	read VAR; git commit -m "$$VAR"
 	git push
