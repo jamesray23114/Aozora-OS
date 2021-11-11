@@ -1,4 +1,4 @@
-.SILENT:
+#.SILENT:
 
 ASM_SRC_FILES := $(shell find src -name *.asm)
 ASM_OBJ_FILES := $(patsubst src/%.asm, temp/src/%.o, $(ASM_SRC_FILES) )
@@ -26,10 +26,11 @@ clean:
 
 .PHONY: run
 run: build
-	qemu-system-x86_64 -hda out/disk.bin
+	qemu-img dd if=out/disk.bin of=out/disk.hhd
+	qemu-system-x86_64 -hda out/disk.hhd
 
 # make debug
-
+	
 .PHONY: debug
 debug: build
 	objdump -D -Mintel,i8086 -m i8086 -b binary out/disk.bin

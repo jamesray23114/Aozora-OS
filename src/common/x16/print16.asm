@@ -1,23 +1,37 @@
-section .kernal
+BITS 16
+
+global printnum, printjstr, printcstr, printchar, clearscreen
+
+section .boot2
+
+clearscreen:
+    mov ah, 0x02
+    xor dx, dx
+    int 0x10
+
+    mov cx, 0
+
+    .loop:
+        mov al, ' '
+        call printchar
+        
+        cmp cx, 90 * 25
+        inc cx
+
+        jnz .loop
+
+    mov ah, 0x02
+    xor bx, bx
+    xor dx, dx
+    int 0x10
+
+    ret
 
 printcstr:
     .loop:
         lodsb
         or al, al
         jz .exit
-        call printchar
-        jmp .loop
-    .exit:
-        ret
-
-printjstr:
-    lodsb
-    mov cl, al
-    .loop:
-        dec cl
-        or cl, cl
-        jz .exit
-        lodsb
         call printchar
         jmp .loop
     .exit:
