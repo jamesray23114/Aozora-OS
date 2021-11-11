@@ -1,0 +1,4 @@
+section .kernal
+
+kmain:
+    ret
