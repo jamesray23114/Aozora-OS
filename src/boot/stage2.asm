@@ -14,7 +14,18 @@ stage2main:
 
     __printcstr welcomestring
 
-    call printregs
+    mov ax, 16
+    mov dx, 77
+
+    push ax
+    push ax
+    push ax
+    push ax
+    push ax
+    push ax
+    push ax
+
+    __printregs
 
     hlt
 .:
