@@ -1,22 +1,22 @@
 BITS 16
 
-global stage2main
-extern _STAGE2BYTES, printcstr, printnum, clearscreen
+%include "common/x16/print16.nasm"
 
+global stage2main
+extern _STAGE2BYTES, DRIVE
 section .boot2
+
+line: db 0
 
 stage2main:
 
     call clearscreen
 
-    xor ah, ah
-    mov al, 0x6a
-    int 0x10
+    __printcstr welcomestring
 
-    mov si, welcomestring
-    mov bl, 11
-    call printcstr 
-    ret
+    call printregs
 
+    hlt
+.:
 
-welcomestring: db "Welcome to Aozora-OS!", 0
+welcomestring: db "____Welcome to Aozora-OS!____", 0

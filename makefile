@@ -5,7 +5,7 @@ ASM_OBJ_FILES := $(patsubst src/%.asm, temp/src/%.o, $(ASM_SRC_FILES) )
 
 $(ASM_OBJ_FILES): temp/src/%.o : src/%.asm
 	mkdir -p $(dir $@) 
-	nasm -w-other -f elf64 $(patsubst temp/src/%.o, src/%.asm, $@) -o $@ 
+	nasm -w-other -i src -f elf64 $(patsubst temp/src/%.o, src/%.asm, $@) -o $@ 
 
 # make build
 

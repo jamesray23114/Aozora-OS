@@ -1,8 +1,8 @@
-BITS 16
+BITS 64
 
-section .kernal
+global kmain
+
+section .kernal 
 
 kmain:
-    mov ax, 0
     ret
-

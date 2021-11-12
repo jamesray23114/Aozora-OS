@@ -1,8 +1,9 @@
 BITS 16 
 
 global bootmain
-extern stage2main
-extern _STAGE2BYTES
+global DRIVE
+
+extern stage2main, _STAGE2BYTES
 
 section .stack
 
@@ -16,8 +17,10 @@ bootmain:
 
     cli                     ;clear interrupts
     
-    mov esp, stack_bot      ;setup stack
-    mov ebp, esp 
+    mov sp, stack_bot      ;setup stack
+    mov bp, sp 
+
+    mov [DRIVE], dl
 
     ; bios read disk
 
@@ -31,32 +34,31 @@ bootmain:
 
     jc .error               ; carry flag is set on error
 
-    call stage2main         
+    jmp stage2main         
 
-    jmp $
+    .error:
+        mov al, 'E'             ; prints E
+        mov ah, 0x0e            ;
+        int 0x10                ;
 
-.error:
-    mov al, 'E'             ; prints E
-    mov ah, 0x0e            ;
-    int 0x10                ;
+        mov al, 'R'
+        mov ah, 0x0e
+        int 0x10
 
-    mov al, 'R'
-    mov ah, 0x0e
-    int 0x10
+        mov al, 'R'
+        mov ah, 0x0e
+        int 0x10
 
-    mov al, 'R'
-    mov ah, 0x0e
-    int 0x10
+        mov al, 'O'
+        mov ah, 0x0e
+        int 0x10
 
-    mov al, 'O'
-    mov ah, 0x0e
-    int 0x10
+        mov al, 'R'
+        mov ah, 0x0e
+        int 0x10
 
-    mov al, 'R'
-    mov ah, 0x0e
-    int 0x10
-
-    jmp $
+        hlt
+.:
 
 DRIVE: db 0                 ; stores drive used to boot os
 
