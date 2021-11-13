@@ -145,9 +145,9 @@ clearscreen:
         mov al, ' '
         call printchar
         
-        cmp cx, 90 * 25
         inc cx
-
+        cmp cx, 90 * 10
+        
         jnz .loop
 
     __movcurorg     

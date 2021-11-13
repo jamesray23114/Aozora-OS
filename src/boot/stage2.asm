@@ -13,21 +13,23 @@ stage2main:
     call clearscreen
 
     __printcstr welcomestring
+    __movcur 0, 1
 
-    mov ax, 16
-    mov dx, 77
 
-    push ax
-    push ax
-    push ax
-    push ax
-    push ax
-    push ax
-    push ax
+    .loop:
+        mov ah, 0
 
-    __printregs
+        int 0x13
+        jnz .print
+
+        ; mov al, byte [0x041E + 32]   
+        jmp .loop   
+    
+    .print:
+        __print_b16_i8 al
+        jmp .loop
 
     hlt
 .:
 
-welcomestring: db "____Welcome to Aozora-OS!____", 0
+welcomestring: db "  Welcome to Aozora-OS!  ", 0

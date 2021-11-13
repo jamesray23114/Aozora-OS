@@ -1,2 +1,4 @@
-temp
-out
+temp/
+out/
+env/
+out.s
