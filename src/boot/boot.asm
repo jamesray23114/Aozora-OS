@@ -17,12 +17,16 @@ bootmain:
 
     cli                     ;clear interrupts
     
-    mov sp, stack_bot      ;setup stack
+    mov sp, stack_bot       ;setup stack
     mov bp, sp 
 
     mov [DRIVE], dl
 
+    call clearscreen
+
     ; bios read disk
+
+    mov dl, [DRIVE]         ; disk os was loaded from
 
     mov ah, 0x02            ; command for read disk            
     mov al, _SEGMENTCOUNT   ; number of segments (512 bytes) to read
@@ -34,33 +38,60 @@ bootmain:
 
     cmp ah, 0
 
-    jnz .error               ; carry flag is set on error
+    jnz error               ; carry flag is set on error
 
     jmp stage2main         
 
-    .error:
-        mov al, 'E'             ; prints E
-        mov ah, 0x0e            ;
-        int 0x10                ;
+error:
+    mov al, 'E'             ; prints E
+    mov ah, 0x0e            ;
+    int 0x10                ;
 
-        mov al, 'R'
-        mov ah, 0x0e
-        int 0x10
+    mov al, 'R'
+    mov ah, 0x0e
+    int 0x10
 
-        mov al, 'R'
-        mov ah, 0x0e
-        int 0x10
+    mov al, 'R'
+    mov ah, 0x0e
+    int 0x10
 
-        mov al, 'O'
-        mov ah, 0x0e
-        int 0x10
+    mov al, 'O'
+    mov ah, 0x0e
+    int 0x10
 
-        mov al, 'R'
-        mov ah, 0x0e
-        int 0x10
+    mov al, 'R'
+    mov ah, 0x0e
+    int 0x10
 
-        hlt
+    hlt
 .:
+
+clearscreen:
+    call move_cursor_to_org
+
+    mov cx, 0
+
+    .loop:
+    mov al, ' '
+    mov ah, 0x0e
+    int 0x10
+
+    inc cx
+
+    cmp ecx, 90 * 10
+    jb .loop
+    
+    call move_cursor_to_org
+
+    ret
+.:
+
+move_cursor_to_org:
+    mov ah, 2
+    xor bx, bx
+    xor dx, dx
+    int 0x10
+    ret
 
 DRIVE: db 0                 ; stores drive used to boot os
 

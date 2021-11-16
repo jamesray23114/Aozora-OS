@@ -1,6 +1,8 @@
 section .boot2
 
-global gdt, gdt_descriptor, data_seg, code_seg
+global gdt, gdt_descriptor, data_seg, code_seg, editGDT
+
+BITS 16
 
 gdt:
     dd 0
@@ -23,7 +25,14 @@ gdt:
 
 gdt_descriptor:
     dw gdt.end - gdt - 1    ;size
-    dd gdt                  ;offset
+    dq gdt                  ;offset
 
 code_seg equ gdt.code_seg - gdt
 data_seg equ gdt.data_seg - gdt
+
+BITS 32
+
+editGDT:
+    mov [gdt.code_seg + 6], byte 10101111b
+    mov [gdt.data_seg + 6], byte 10101111b
+    ret

@@ -26,25 +26,28 @@ clean:
 
 .PHONY: run
 run: build
+	rm -f env/qemu-log.txt
 	rm -f env/Aozora-OS.iso
 	qemu-img dd if=temp/disk/disk.bin of=env/Aozora-OS.iso
 	qemu-system-x86_64 \
 		-accel tcg,thread=single \
 		-cpu qemu64 \
-		-m 1024 \
+		-m 4096 \
 		-no-reboot \
 		-drive format=raw,media=disk,file=env/Aozora-OS.iso \
 		-drive format=raw,media=disk,file=env/harddrive.hhd \
 		-serial stdio \
 		-smp 1 -usb -vga std \
-		-d cpu_reset \
+		-d int \
 		-D env/qemu-log.txt
 
 # make debug
 	
 .PHONY: debug
 debug: build
-	objdump -D -Mintel,i8086 -m i8086 temp/disk/disk.elf > temp/objdump.asm
+	objdump -D -Mintel,i8086 -m i8086 temp/disk/disk.elf > temp/objdump16.asm
+	objdump -D -Mintel,i386 -M i386 temp/disk/disk.elf > temp/objdump32.asm
+	objdump -D -Mintel,x86-64 -M x86-64 temp/disk/disk.elf > temp/objdump64.asm
 
 #make push
 
