@@ -1,6 +1,6 @@
 .SILENT:
 
-ASM_SRC_FILES := $(shell find src -name *.asm)
+ASM_SRC_FILES := $(shell find src/ -name *.asm )
 ASM_OBJ_FILES := $(patsubst src/%.asm, temp/src/%.o, $(ASM_SRC_FILES) )
 
 $(ASM_OBJ_FILES): temp/src/%.o : src/%.asm
@@ -36,13 +36,15 @@ run: build
 		-drive format=raw,media=disk,file=env/Aozora-OS.iso \
 		-drive format=raw,media=disk,file=env/harddrive.hhd \
 		-serial stdio \
-		-smp 1 -usb -vga std
+		-smp 1 -usb -vga std \
+		-d cpu_reset \
+		-D env/qemu-log.txt
 
 # make debug
 	
 .PHONY: debug
 debug: build
-	objdump -D -Mintel,i8086 -m i8086 -b binary	temp/disk/disk.elf > out.s
+	objdump -D -Mintel,i8086 -m i8086 temp/disk/disk.elf > temp/objdump.asm
 
 #make push
 

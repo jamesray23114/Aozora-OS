@@ -1,8 +1,12 @@
-BITS 64
+;BITS 64
 
 global kmain
 
 section .kernal 
 
+
 kmain:
-    ret
+
+    hlt
+
+
