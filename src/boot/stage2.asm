@@ -2,14 +2,13 @@ BITS 16
 
 global stage2main
 
-extern kmain
+extern kernel_main
 extern gdt, gdt_descriptor, code_seg, data_seg, editGDT
 extern setupPaging
 
-section .boot2
+section .boot
 
 stage2main:
-    ;call clearscreen
     jmp enterKernal
 .:
 
@@ -114,6 +113,8 @@ start32bitmode:
     call code_seg:enter64bitmode
 .:
 
+section .text
+
 BITS 64
 
 enter64bitmode:
@@ -125,5 +126,7 @@ enter64bitmode:
     mov fs, ax
     mov gs, ax
 
-    jmp kmain
+    call kernel_main
+
+    hlt
 .:

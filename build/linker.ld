@@ -1,17 +1,32 @@
 ENTRY(bootmain)
 
-MEMORY
-{
-    bootloader  (W): org = 0x07c00, len = 512
-    bootloader2 (W): org = 0x07e00, len = -1
-    kernel      (W): org = 0x10000,  len = -1
-    stack       (W): org = 0,       len = -1 
-}
+
 SECTIONS
-{
-    .boot             : { *(.boot)   } >bootloader
-    .boot2            : { *(.boot2)  } >bootloader2
-    .kernel           : { *(.kernel) } >kernel
-    .stack (NOLOAD)   : { *(.stack)  } >stack
-    _SEGMENTCOUNT = ((SIZEOF(.boot2) + SIZEOF(.kernel)) / 512) + 1;
+{   
+    .bss 0x1000 :  
+    { 
+        *(.bss) 
+        *(COMMON) 
+    }  
+    . = 0x07c00;
+    .boot   :   
+    { 
+        *(.boot)   
+    }  
+    . = 0x07c00 + (SIZEOF(.boot) / 512 + 1) * 512;
+    .text : 
+    { 
+        *(.text)   
+    }  
+    .data : ALIGN(16)
+    { 
+        *(.data)   
+    }  
+    .rodata : ALIGN(16)  
+    { 
+        *(.rodata) 
+    }    
+    _SEGMENTBOOT = ((SIZEOF(.boot) - 512) / 512) + 1;
+    _SEGMENTTEXT = (SIZEOF(.text) / 512) + 1;
+    _KERNELLOC   = 0x07c00 + (_SEGMENTBOOT + 1) * 512; 
 }
