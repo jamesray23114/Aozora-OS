@@ -12,7 +12,7 @@ $(ASM_OBJ_FILES): temp/src/%.o : src/%.asm
 .PHONY: build
 build: $(ASM_OBJ_FILES)
 	mkdir -p temp/disk
-	x86_64-elf-ld -T linker.ld -o temp/disk/disk.elf $(ASM_OBJ_FILES)
+	x86_64-elf-ld -T build/linker.ld -o temp/disk/disk.elf $(ASM_OBJ_FILES)
 	objcopy -O binary temp/disk/disk.elf temp/disk/disk.bin 
 
 # make clean
@@ -54,6 +54,18 @@ debug: build
 .PHONY: push
 push: 
 	git add .
-	printf "Add commit message: "
-	read VAR; git commit -m "$$VAR"
+	printf "Add commit message: " 
+	read VAR 							; \
+	MAJOR=$$(sed '1!d' build/VERSION) 	; \
+	MINOR=$$(sed '2!d' build/VERSION) 	; \
+	PATCH=$$(sed '3!d' build/VERSION) 	; \
+	VERSTRING="Aozora-OS $$MAJOR.$$MINOR.$$PATCH -> " ; \
+	git commit -m "$$VERSTRING$$VAR"
 	git push
+
+.PHONY: test
+test: 
+	MAJOR=$$(sed '1!d' build/VERSION) 	; \
+	MINOR=$$(sed '2!d' build/VERSION) 	; \
+	PATCH=$$(sed '3!d' build/VERSION) 	; \
+	VERSTRING="Aozora-OS $$MAJOR.$$MINOR.$$PATCH -> " 
