@@ -1,8 +1,8 @@
-section .boot2
-
 global gdt, gdt_descriptor, data_seg, code_seg, editGDT
 
 BITS 16
+
+section .boot
 
 gdt:
     dd 0

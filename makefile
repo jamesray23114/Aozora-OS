@@ -3,16 +3,25 @@
 ASM_SRC_FILES := $(shell find src/ -name *.asm )
 ASM_OBJ_FILES := $(patsubst src/%.asm, temp/src/%.o, $(ASM_SRC_FILES) )
 
+C_SRC_FILES := $(shell find src/ -name *.c )
+C_OBJ_FILES := $(patsubst src/%.c, temp/src/%.o, $(C_SRC_FILES) )
+
+ALL_OBJ_FILES := $(ASM_OBJ_FILES) $(C_OBJ_FILES)
+
 $(ASM_OBJ_FILES): temp/src/%.o : src/%.asm
 	mkdir -p $(dir $@) 
 	nasm -w-other -i src -f elf64 $(patsubst temp/src/%.o, src/%.asm, $@) -o $@ 
 
+$(C_OBJ_FILES): temp/src/%.o : src/%.c
+	mkdir -p $(dir $@)
+	x86_64-elf-gcc -ffreestanding -Ttext 0x8200 -fno-asynchronous-unwind-tables -Qn -c -O4 -I src $(patsubst temp/src/%.o, src/%.c, $@) -o $@
+
 # make build
 
 .PHONY: build
-build: $(ASM_OBJ_FILES)
+build: $(ALL_OBJ_FILES)
 	mkdir -p temp/disk
-	x86_64-elf-ld -T build/linker.ld -o temp/disk/disk.elf $(ASM_OBJ_FILES)
+	x86_64-elf-ld -T build/linker.ld -o temp/disk/disk.elf $(ALL_OBJ_FILES)
 	objcopy -O binary temp/disk/disk.elf temp/disk/disk.bin 
 
 # make clean

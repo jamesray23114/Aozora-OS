@@ -2,7 +2,7 @@ BITS 32
 
 global setupPaging
 
-section .boot2
+section .boot
 
 PageTableStart equ 0x1000
 
