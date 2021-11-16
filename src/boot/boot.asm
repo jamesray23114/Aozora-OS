@@ -5,7 +5,7 @@ global DRIVE
 
 extern stage2main, _SEGMENTBOOT, _SEGMENTTEXT, _KERNELLOC
 
-section .bss
+section .stack
 
 stack_top:
     resb 0x6000
@@ -43,7 +43,7 @@ bootmain:
     mov al, _SEGMENTTEXT    ; number of segments (512 bytes) to read
     mov dh, 0               ; head to read from -> reading from bottom so doesnt matter
     mov ch, 0               ; cylinder to read from   ^
-    mov cl, _SEGMENTBOOT + 2   ; sector to read from (reads from that sector inclusivly)
+    mov cl, _SEGMENTBOOT + 2    ; sector to read from (reads from that sector inclusivly)
     mov bx, _KERNELLOC          ; where to store output in memory(right behind out boot loader)
     int 0x13
 

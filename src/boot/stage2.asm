@@ -126,7 +126,5 @@ enter64bitmode:
     mov fs, ax
     mov gs, ax
 
-    call kernel_main
-
-    hlt
+    jmp kernel_main
 .:

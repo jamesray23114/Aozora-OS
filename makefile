@@ -14,7 +14,7 @@ $(ASM_OBJ_FILES): temp/src/%.o : src/%.asm
 
 $(C_OBJ_FILES): temp/src/%.o : src/%.c
 	mkdir -p $(dir $@)
-	x86_64-elf-gcc -ffreestanding -Ttext 0x8200 -fno-asynchronous-unwind-tables -Qn -c -O4 -I src $(patsubst temp/src/%.o, src/%.c, $@) -o $@
+	x86_64-elf-gcc -ffreestanding -fno-asynchronous-unwind-tables -Qn -c -O4 -I src $(patsubst temp/src/%.o, src/%.c, $@) -o $@
 
 # make build
 
