@@ -3,7 +3,7 @@ BITS 16
 global bootmain
 global DRIVE
 
-extern stage2main, _STAGE2BYTES
+extern stage2main, _SEGMENTCOUNT
 
 section .stack
 
@@ -25,14 +25,16 @@ bootmain:
     ; bios read disk
 
     mov ah, 0x02            ; command for read disk            
-    mov al, _STAGE2BYTES    ; number of bytes to read
+    mov al, _SEGMENTCOUNT   ; number of segments (512 bytes) to read
     mov dh, 0               ; head to read from -> reading from bottom so doesnt matter
     mov ch, 0               ; cylinder to read from   ^
     mov cl, 2               ; sector to read from (reads from that sector inclusivly)
     mov bx, diskload        ; where to store output in memory(right behind out boot loader)
     int 0x13
 
-    jc .error               ; carry flag is set on error
+    cmp ah, 0
+
+    jnz .error               ; carry flag is set on error
 
     jmp stage2main         
 
