@@ -1,14 +1,14 @@
+#include "kernel/print.h"
 
 void kernel_main()
 {
-    char* vram = (char*) 0xb8000;
-    vram[0] = 'c';    
+    printString("hello \n", WHITE);
+       
+    Vchar vstring[] = {{'h', BLUE}, {'e', GREEN}, {'l', YELLOW}, {'l',PURPLE}, {'o',RED}, NULLVCHAR};
 
-    char* test = (char*) 0x100000;
-    test[0] = 'h';
+    printVString(vstring);
+    
 
-    vram[2] = test[0];
-
-    return;
+    while(1);
 }
 

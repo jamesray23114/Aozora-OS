@@ -1,3 +1,4 @@
 temp/
 env/
 build/VERSION.txt
+.vscode
