@@ -56,12 +56,12 @@ push:
 	git add .
 	printf "Add commit message: " 
 	read VAR 											; \
-	MAJOR=$$(sed '1!d' build/VERSION) 					; \
-	MINOR=$$(sed '2!d' build/VERSION) 					; \
-	PATCH=$$(sed '3!d' build/VERSION) 					; \
+	MAJOR=$$(sed '1!d' build/VERSION.txt) 				; \
+	MINOR=$$(sed '2!d' build/VERSION.txt) 				; \
+	PATCH=$$(sed '3!d' build/VERSION.txt) 				; \
 	VERSTRING="Aozora-OS $$MAJOR.$$MINOR.$$PATCH -> " 	; \
 	git commit -m "$$VERSTRING$$VAR" 					; \
-	PATCH=$$(($$PATCH+1)) ; printf "$$MAJOR\n$$MINOR\n$$PATCH" > build/VERSION
+	PATCH=$$(($$PATCH+1)) ; printf "$$MAJOR\n$$MINOR\n$$PATCH" > build/VERSION.txt
 	git push
 
 
