@@ -1,4 +1,5 @@
-#include "kernel/print.h"
+#include "kernel/lib/print.h"
+#include "IO.h"
 
 void kernel_main()
 {
@@ -7,7 +8,6 @@ void kernel_main()
     Vchar vstring[] = {{'h', BLUE}, {'e', GREEN}, {'l', YELLOW}, {'l',PURPLE}, {'o',RED}, NULLVCHAR};
 
     printVString(vstring);
-    
 
     while(1);
 }

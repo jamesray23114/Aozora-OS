@@ -1,4 +1,5 @@
 temp/
-env/
+env/qemu-log.txt
+env/harddrive.hhd
 build/VERSION.txt
 .vscode
