@@ -53,23 +53,19 @@ bootmain:
     jmp stage2main         
 
 error:
+    mov ah, ch
+
     mov al, 'E'             ; prints E
     mov ah, 0x0e            ;
     int 0x10                ;
 
-    mov al, 'R'
-    mov ah, 0x0e
-    int 0x10
+    mov al, ' '             ; prints E
+    mov ah, 0x0e            ;
+    int 0x10                ;
 
-    mov al, 'R'
-    mov ah, 0x0e
-    int 0x10
 
-    mov al, 'O'
-    mov ah, 0x0e
-    int 0x10
-
-    mov al, 'R'
+    mov al, '0'
+    add al, ch
     mov ah, 0x0e
     int 0x10
 

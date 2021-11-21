@@ -1,5 +1,7 @@
 #pragma once
 
+#include "typedef.h"
+
 #define NULLVCHAR {0, 0}
 
 typedef char Vcolor;
@@ -28,8 +30,8 @@ typedef struct Vchar
 } Vchar;
 
 struct Vchar* VRAM = (struct Vchar*) 0xb8000;
-char ROW = 0;
-char COL = 0;
+uint8 ROW = 0;
+uint8 COL = 0;
 
 void printVString(Vchar* buf)
 {
@@ -54,22 +56,24 @@ void printVString(Vchar* buf)
 
 void printString(char* buf, Vcolor color)
 {
-    for(int i = 0; buf[i] != 0; i++)
+    for(int i = 0; ; i++)
     {
-        if(buf[i] == '\n')
+        switch (buf[i])
         {
+        case '\0': return;
+        case '\n':
             ROW++;
             COL = 0;
-            return;
-        }
+            break;
+        default:
+            VRAM[COL + ROW * 80].character = buf[i];
+            VRAM[COL + ROW * 80].color = color;
 
-        VRAM[COL + ROW * 80].character = buf[i];
-        VRAM[COL + ROW * 80].color = color;
-
-        if(++COL == 80)
-        {
-            COL = 0;
-            ROW++;
+            if(++COL == 80)
+            {
+                COL = 0;
+                ROW++;
+            }
         }
     }
 }
