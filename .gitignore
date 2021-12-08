@@ -1,2 +1,5 @@
 temp/
+build/
+env/
+presrc/
 .vscode

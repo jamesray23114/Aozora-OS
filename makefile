@@ -104,7 +104,6 @@ push:
 	git add .gitignore
 	git add LICENSE
 	git add makefile
-	git add build/linker.ld
 	printf "Add commit message: " 
 	read VAR 											; \
 	MAJOR=$$(sed '1!d' build/VERSION.txt) 				; \
