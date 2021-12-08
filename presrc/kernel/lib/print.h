@@ -6,22 +6,22 @@
 
 typedef char Vcolor;
 
-const Vcolor BLACK          = 0;
-const Vcolor BLUE           = 1;
-const Vcolor GREEN          = 2;
-const Vcolor CYAN           = 3;
-const Vcolor RED            = 4;
-const Vcolor PURPLE         = 5;
-const Vcolor BROWN          = 6;
-const Vcolor GREY           = 7;
-const Vcolor DARK_GREY      = 8;
-const Vcolor LIGHT_BLUE     = 9;
-const Vcolor LIGHT_GREEN    = 10;
-const Vcolor LIGHT_CYAN     = 11;
-const Vcolor LIGHT_RED      = 12;
-const Vcolor LIGHT_PURPLE   = 13;
-const Vcolor YELLOW         = 14;
-const Vcolor WHITE          = 15;
+#define BLACK          0
+#define BLUE           1
+#define GREEN          2
+#define CYAN           3
+#define RED            4
+#define PURPLE         5
+#define BROWN          6
+#define GREY           7
+#define DARK_GREY      8
+#define LIGHT_BLUE     9
+#define LIGHT_GREEN    10
+#define LIGHT_CYAN     11
+#define LIGHT_RED      12
+#define LIGHT_PURPLE   13
+#define YELLOW         14
+#define WHITE          15
 
 typedef struct Vchar
 {
