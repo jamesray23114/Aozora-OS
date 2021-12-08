@@ -100,7 +100,6 @@ debug: build
 
 .PHONY: push
 push: 
-	git add env
 	git add src
 	git add .gitignore
 	git add LICENSE
