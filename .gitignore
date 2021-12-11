@@ -1,5 +1,5 @@
-temp/
-build/
-env/
-srcold/
+temp
+build
+env
+srcold
 .vscode

@@ -1,75 +1,54 @@
 .SILENT:
 
-ASM_SRC_FILES := $(shell find src/ -name *.asm )
-ASM_OBJ_FILES := $(patsubst src/%.asm, temp/src/%.o, $(ASM_SRC_FILES) )
+# files for building boot loader
 
-C_SRC_FILES := $(shell find src/ -name *.c )
-C_OBJ_FILES := $(patsubst src/%.c, temp/src/%.o, $(C_SRC_FILES) )
-
-ALL_OBJ_FILES := $(ASM_OBJ_FILES) $(C_OBJ_FILES)
-
-CFLAGS_EFI := -ffreestanding -fshort-wchar -mno-red-zone -I build/gnu-efi/inc -I path/to/gnu-efi/inc/x86_64  -I path/to/gnu-efi/inc/protocol -Ofast
-LFLAGS_EFI := -nostdlib -Wl,-dll -shared -Wl,--subsystem,10 -e efi_main 
-
-#make buildefi
+CFLAGS_BOOT := -ffreestanding -fshort-wchar -mno-red-zone -I build/gnu-efi/inc -I build/gnu-efi/inc/x86_64 -I build/gnu-efi/inc/protocol -I src/ -Ofast
+LFLAGS_BOOT := -nostdlib -Wl,-dll -shared -Wl,--subsystem,10 -e efi_main 
 
 .PHONY: build
-build:
+build: 
 #create files / directories
-	mkdir -p temp/iso 
+	mkdir -p temp/iso 		
 	mkdir -p temp/efi
 
-	touch temp/iso/fat.img env/Aozora-OS.iso 
+	rm -f temp/iso/fat.img env/Aozora-OS.iso 
 
-	dd if=/dev/zero of=temp/iso/fat.img bs=1k count=4096 
-	dd if=/dev/zero of=env/Aozora-OS.iso bs=20k count=64k 
+	touch temp/iso/fat.img env/Aozora-OS.iso env/harddrive.hhd
 
-#format iso
-	parted env/Aozora-OS.iso -s -a minimal mklabel gpt
-	parted env/Aozora-OS.iso -s -a minimal mkpart EFI fat16 2048s 35116s 
-	parted env/Aozora-OS.iso -s -a minimal name 1 EFI-PART
-	parted env/Aozora-OS.iso -s -a minimal mkpart primary 35117s 2615263s
-	parted env/Aozora-OS.iso -s -a minimal name 2 AOZORA-OS-FS-PART
-	parted env/Aozora-OS.iso -s -a minimal toggle 1 boot
+	truncate -s 4096k  temp/iso/fat.img
+	truncate -s 1280m  env/Aozora-OS.iso
+	truncate -s 10G    env/harddrive.hhd
 
 #build and link files
 
-	x86_64-w64-mingw32-gcc $(CFLAGS_EFI) -c -o temp/efi/boot.o src/boot/boot.c
-	x86_64-w64-mingw32-gcc $(CFLAGS_EFI) -c -o temp/efi/data.o build/gnu-efi/lib/data.c
-	x86_64-w64-mingw32-gcc $(LFLAGS_EFI) -o temp/efi/BOOTX64.EFI temp/efi/boot.o temp/efi/data.o
+	x86_64-w64-mingw32-gcc $(CFLAGS_BOOT) -c -o temp/efi/boot.o   src/boot/boot.c
+	x86_64-w64-mingw32-gcc $(CFLAGS_BOOT) -c -o temp/efi/data.o   build/gnu-efi/lib/data.c
+	x86_64-w64-mingw32-gcc $(LFLAGS_BOOT) -o temp/efi/BOOTX64.EFI temp/efi/boot.o temp/efi/data.o
+
+#format iso
+	parted env/Aozora-OS.iso -s -a minimal mklabel gpt
+	parted env/Aozora-OS.iso -s -a minimal mkpart EFI fat16 2048s 10240s 
+	parted env/Aozora-OS.iso -s -a minimal name 1 EFI-PART
+	parted env/Aozora-OS.iso -s -a minimal mkpart primary 10241s 2621406s
+	parted env/Aozora-OS.iso -s -a minimal name 2 AOZORA-OS-FS-PART
+	parted env/Aozora-OS.iso -s -a minimal toggle 1 boot
 
 #copy uefi files to fat image
 
-	mformat -i temp/iso/fat.img -h 1 -t 1 -n 33068 -c 1
+	mformat -i temp/iso/fat.img -h 1 -t 1 -n 8192 -c 1
 	mmd -i temp/iso/fat.img ::/EFI
 	mmd -i temp/iso/fat.img ::/EFI/BOOT
 	mcopy -i temp/iso/fat.img temp/efi/BOOTX64.EFI ::/EFI/BOOT 
 
 #copy files to finished iso
-	dd if=temp/iso/fat.img of=env/Aozora-OS.iso bs=512 count=35116 seek=2048 conv=notrunc
-
-#$(ASM_OBJ_FILES): temp/src/%.o : src/%.asm
-#	mkdir -p $(dir $@) 
-#	nasm -w-other -i src -f elf64 $(patsubst temp/src/%.o, src/%.asm, $@) -o $@ 
-#
-#$(C_OBJ_FILES): temp/src/%.o : src/%.c
-#	mkdir -p $(dir $@)
-#	x86_64-elf-gcc -ffreestanding -fno-asynchronous-unwind-tables -Qn -c -Ofast -I src $(patsubst temp/src/%.o, src/%.c, $@) -o $@
-
-## make build
-
-#.PHONY: build
-#build: $(ALL_OBJ_FILES)
-#	mkdir -p temp/disk
-#	x86_64-elf-ld -T build/linker.ld -o temp/disk/disk.elf $(ALL_OBJ_FILES)
-#	objcopy -O binary temp/disk/disk.elf temp/disk/disk.bin 
+	dd if=temp/iso/fat.img of=env/Aozora-OS.iso bs=512 count=8192 seek=2048 conv=notrunc
 
 ## make clean
 
 .PHONY: clean
 clean:
 	rm -r temp && mkdir temp
-	rm -f env/Aozora-OS.iso
+	rm -r env && mkdir env
 
 # make run
 
@@ -82,7 +61,8 @@ run: build
 		-m 4096 \
 		-no-reboot \
 		-drive format=raw,if=pflash,file=/usr/share/ovmf/OVMF.fd,readonly=on \
-		-drive file=env/Aozora-OS.iso \
+		-drive format=raw,file=env/Aozora-OS.iso \
+		-drive format=raw,file=env/harddrive.hhd \
 		-smp 1 -usb -vga std \
 		-d int \
 		-D env/qemu-log.txt
