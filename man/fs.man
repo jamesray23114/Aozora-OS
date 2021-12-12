@@ -1,0 +1,318 @@
+
+// ========================================================================================= //
+fat 16:
+// ========================================================================================= //
+
+    SEC 0 bytes: (boot record)
+        00 - 03: short jump
+        03 - 11: OEM identifier
+        11 - 13: bytes per sector
+        13 - 14: sectors per cluster
+        14 - 16: number of reserved sectors
+        16 - 17: number of file tables
+        17 - 19: number of root directory entries
+        19 - 21: total sectors in logical volume
+        21 - 22: media descriptor type
+        22 - 24: number of sectors per fat
+        24 - 26: number of sectors per track
+        26 - 28: number of heads
+        28 - 32: number of hidden sectors
+        32 - 36: large sector count (used if there are more than 25565 sectors in logical volume)
+        36 - 37: drive number
+        37 - 38: unused
+        38 - 39: 0x28 or 0x29
+        39 - 43: volume serial identifier
+        43 - 54: volume name
+        54 - 62: system name - unused
+        bootloader code if used in bios, otherwise reboot code as it shouldnt be executed.
+
+    The FAT16 file tables:
+        size of root dir: number of directory entries * 32 alligned to the size of the sector ( ( dir entries + bytes per sector - 1) / bytes per sector) 
+        first data sector: (where files are stored) reserved sectors + fat size * table count + size of root dir
+        first fat: reserved sector count (right after boot record)
+        total data sectors: total sectors - reserved sector count - tables count * table size - size of root dir
+        number of clusters: total data sectors / sectors per cluster (should be > 65525 for fat 16)
+
+        root dir: reserved sectors + fat size * table count
+
+        to read from a fat file system, you will want to read the first byte from each entry in the root directory. each entry will be 32 bytes unless extended by using flags:
+            first entry should be ffxxh and second should be ffff
+            if the first byte read is a 0, the entry is unused.
+            if the first byte read is greater = than 20h, the entry is a valid entry
+
+        when you read a cluster from the directory entry, you go to that spot in the FAT and continue reading bytes until you get to a FF byte (end of file)
+            each value read is a cluster that contains data from that file
+
+        directory / file entry structure (32 bytes):
+            00 - 08: entry name
+            08 - 11: entry extension
+            11 - 12: flags (uses long name extension if either bit 0, 1, 2, 3 is set)
+                0b: read only flag  (01h)
+                1b: hidden flag     (02h)
+                2b: system flag     (04h)
+                3b: volume flag     (08h)
+                4b: subdir flag     (10h)    
+            12 - 13: windows nt
+            13 - 14: millis created
+            14 - 16: creation time
+            16 - 18: creation date
+            18 - 20: last access
+            20 - 22: reserved
+            22 - 24: last write time
+            24 - 26: last write date
+            26 - 28: cluster number
+            28 - 32: size in bytes
+            
+// ========================================================================================= //
+
+
+
+// ========================================================================================= //
+jfs: (version number 1)
+// ========================================================================================= //
+
+    any time I mention a 'size', the size is to be measured in logical sectors (as defined in the first J record) unless otherwise specified.
+    any optional parameters should be filled with 0x90 if unused so it is known they are unused, unless otherwise specified.
+    this fs uses purely ascii for the time being, this will likely be changed to allow for different text formats in future versions.
+    any name that would end early should be padded with null termination characters (0 '\0' 0x00)
+        names can only contain alphanumeric characters and "~!#$%^&*()_-+=;.? " and tab, this rule may be changed in future revision or may be os specific.
+
+    // ========================================================================================= //
+
+    jfs read only record: (first sector on part, should not be changed during normal file management and only changed when repartitioning disk)
+        00 - 03: short jump to boot code followed by noop (EB xx 90), can be made in (FA F4 90) to signify system is not bootable
+        03 - 08: identifier (usage can be whatever, might to smart to have some standardize system for this but for the time being dont rely on this value)
+        08 - 10: version (starts at 1, idea is this should be used to determine any revisions done to future versions of the jfs ) 
+        10 - 12: bytes per logical sector multiplied by 64 (cluster / sector ect..., typically a multiple of 512 (8), max logical sector size is 4mib)
+        12 - 14: logical sector offset (for use with bios code, should be one normally as first J record takes up one logical sector)
+        14 - 16: number of copies of each table (used for redundency)
+        16 - 20: checksum of first J record and reserved logcical sectors (this means reserved logical sectors cannot be changed once partition is created, assmune both checksums are 0)
+        20 - 24: location of second j record (end of disk, effectively the size of the partition)
+            - if using a standard 512 byte long logical sector, this means the maximum size of the partition is 2tb, howerver this can be changed by modifying the size
+                of each logical sector, at a loss of storage effeciency (more area on the disk will be unused).
+        24 - 28: checksum of second J record at last modification of partition
+        28 - 32: time of partition creation
+        bios bootloader ending with 0xAA55, if unused, fill with 0x90 (noop) ending with (FA F4 90 0xAA55) to show its unused. 
+
+    jfs writable record: (stores info about things that may change often, such as number of files on system ect.., is stored on the last logical sector on the partition)
+        00 - 04: checksum of second J record at time of partition creation / last modification (last modification as in modified with partitioning software and not general write to disk)
+        04 - 08: number of directories on disk
+        08 - 12: number of normal files on disk
+        12 - 16: number of abstract files on disk
+        16 - 20: start of system reserved logical sectors (used by the os for many reason, such as implimenting loopback devices and swap memory)
+            if the first bit of this number is set, the data grows from the second j record towards the first. 
+        20 - 24: number of system reserved logical sectors 
+        24 - 26: size of allocation table
+        26 - 28: checksum of allocation table
+        28 - 30: reserved
+        30 - 32: number 0x57AA
+        32 - 64: reserved by jfs for future use, should be filled with 0x90 (noop) for jfs v1
+        64+    : unspecified, can be used for anyuse and is likely os dependent, note logical sector sizes can be 64 bytes long. 
+                    if unused fill with 0x90 (noop)
+
+    // ========================================================================================= //
+
+    times: (32 bits)
+        stores the number of mins elasped since jan 1, 2000 at 00:00. (2000 was a leap year)
+        all refernces of time in the jfs should be based on this measure
+            
+        this sytem does not take into account leap cycles, but should be easy enough to impliment and this version will work until 2400:
+        
+            4 years since epoch:            value div 2103840
+            years since last leap year:     value mod 2103840 div 525600 
+
+            days since last year:           value mod 525600  div 1440
+            hours since last day:           value mod 1440    div 60
+
+            mins since last hour:           value mod 60
+
+        e.x. 11540639 mins: (todays date)
+            epoch    + (2000 years)
+            20 years + 
+            1  years +
+            344 days + 
+            7 hours  +
+            59 mins  = december 10, 2021 @ 07:59 AM
+
+        e.x. 4294967295 mins: (max value)
+            epoch      + (2000 years)
+            8164 years + 
+            1 year     +
+            350 days   + 
+            4 hours    +
+            15 mins    = december 16, 10164 @ 04:15 AM (off by about 20 days due to leap cycles)
+
+    // ========================================================================================= //
+
+    tables are stored after the first j record and grow upwords towards the second j record
+    if multiple tables exist they are not placed one after another but rather are placed in alternating order (alloc table, abstract table, name table, alloc table...)
+    each table should be made 1 logical sector larger than what is needed when table moves occur as to reduce the number of table moves needed. 
+    files are stored just below the second J record and grow downwords from there so that the tables (stored on the other side of the disk) can be easily changed without needed to shift the entire disk.
+    abstract files are files without a directory or name, they can be used as temperary files and are able to be globally accessed.            
+
+    allocation table: (the allocation table is stored right after the end of the first J record and reserved logical sectors)
+
+        the allocation table contains a 16 byte entry for every directory and file on the disk plus 32 bytes extra bytes for the descriptor entry.
+
+        descriptor entry: (not an actual directry, used to verify the state of the allocation table, not counted towards total directories)
+            00 - 04: allocation table checksum as of last modification
+            04 - 08: number of entries in allocation table
+            08 - 12: number of unused entries in allocation table
+            12 - 16: time last modified
+            16 - 20: time last accessed
+            20 - 24: time of creation (should never change even when repartitioned unless repartition destroys the allocation table)
+            24 - 28: jfs reserved
+            28 - 32: os reserved, if unused fill with 0x90
+
+            may be smart to allign this to the next logical sector.
+
+        directory entry:
+            00 - 01: jfs directory flags
+                bit 0 (0x0001): directory / file entry? 0 for directory
+                bit 1 (0x0002): system reserved directory (makes all files within the directory act differently, makes users unable to modify directory, does not effect sub dirs)
+                bit 2 (0x0004): hidden (hides directory from normal user activities (ie when using ls))
+                bit 3 (0x0008): frozen (used when a directory is undergoing a change that should not be stopped, for instance defragmentation or something of the like)
+                bit 4 - 8:      number of name extension pages. if 0, name extension is not used
+            01 - 02: os reserved directory flags
+            02 - 06: location of next entry within the same directory, 0 if none exist
+            06 - 10: location of first subdirectory, 0 if none exist
+            10 - 16: if name extension pages are enabled, this is a pointer to the entry in the extended name table, otherwise this is the name of the directory.
+
+        root directory entry: entry 0 (uses same layout as a normal directory)
+            00 - 01: dir flags. 01000000
+            01 - 02: os flags 
+            02 - 06: time of partition creation (no other files exist inline with the root directory)
+            06 - 10: number of first subdirectory
+            10 - 16: '/' '\0' '\0' '\0' '\0' '\0' (the directory name is extended 0 times)
+
+        file entry:
+            00 - 01: jfs file flags
+                bit 0 (0x0001): directory / file entry? 1 for file
+                bit 1 (0x0002): readonly file
+                bit 2 (0x0004): hidden
+                bit 3 (0x0008): frozen (used when file is open or undergoing modification)
+                bit 4 - 8:      number of name extension pages. if 0, name extension is not used
+            01 - 02: os reserved file flags
+            02 - 06: location of next entry within the same directory, 0 if none exist
+            06 - 10: location of entry in file table
+            10 - 16: if name extension pages are enabled, this is a pointer to the entry in the extended name table, otherwise this is the name of the file.
+
+        unused entry: (these entries are used to pad until the next logical sector or replace entries that got deleted and should be ignored by normal software)
+            00 - 10: 0
+            10 - 16: 0x90 0x90 0x90 0x90 0x90 0x90
+
+    file table: this table contains info about files and is 32 bytes long
+
+        pointers to this table are multiplied by 32 to find the file they are looking for.
+
+        descriptor entry:
+            00 - 04: size of file table
+            04 - 08: number of file entries
+            08 - 12: number of unused entries
+            12 - 16: checksum of file table
+            16 - 32: unused
+
+        file entry:
+            00 - 01: 0xAA if file is whole, 0x81 if file is fragmented
+            01 - 05: file checksum
+            05 - 09: file entry checksum
+            09 - 10: number of duplicate files made as backups.
+                these are stored continuously.
+            10 - 12: extended os reserved flags
+            12 - 16: time created
+            16 - 20: time last modified
+            20 - 24: file size in logical sectors
+            24 - 28: unused bytes in file (used to find size of data in file / end of file)
+            28 - 32: pointer to file location or location in file fragment table
+
+        unused entry: 0x90 x 32
+
+
+    extended name table: this table is a list of extended names used by files and directories. the maximum extended name size is 240 bytes long.
+
+        pointers to this table are multiplied by 16 to find the name they are looking for.
+
+        descriptor entry:
+            00 - 04: size of extended name table
+            04 - 08: number of different entries
+            08 - 12: number of unused entries
+            12 - 16: checksum of extended name table
+
+        name entry:
+            00 - 16 x (number of name extension pages): the name of the file that pointed to this entry
+
+        unused entry: 0x90 x 16
+
+    file fragment table:
+
+        pointers to this table are multiplied by 8 to find the file they are looking for.
+        you keep reading untill you reach a end of file entry
+
+        descriptor entry:
+            00 - 04: size of file fragment table
+            04 - 08: number of different entries
+            08 - 12: number of unused entries
+            12 - 16: checksum of file fragment table
+
+        start of file entry:
+            00 - 04: 1
+            04 - 08: file location in allocation table (used to lookup file during defragmentation)
+
+        fragment entry:
+            00 - 04: fragment location on disk
+            04 - 08: fragment size
+
+        end of file entry: 
+            00 - 04: 1
+            04 - 08: 0
+
+        unused entry:
+            00 - 04: 0
+            04 - 08: 0x90 0x90 0x90 0x90
+
+    // ========================================================================================= //
+
+    usage:
+        finding tables:
+            1. load first sector into memory
+            2. make a struct / union of the read values, ensure values read make sense
+                struct JTable1 
+                {
+                    char[3] jump;
+                    char[5] identifier;
+                    u16     version;
+                    u16     bytes_per_lsector;
+                    u16     lsector_start;
+                    u16     table_copies;
+                    u64     JTable1_checksum;
+                    u64     partition_size;
+                    u64     JTable2_checksum;
+                    u64     time;
+                } jt1;
+                assert(jt1.JTable1_checksum == sum(jt1)); ect...
+            3. find the location of the last sector using the values of bytes_per_lsector and partition_size.
+                u64 jt2ptr = jt1.bytes_per_lsector * 64 * jt1.partition_size; 
+            4. load that sector into memory
+            5. make a struct / union of the read values, ensure values read make sense
+                struct JTable2
+                {
+                    u64 JTable2_checksum;
+                    u64 directory_count;
+                    u64 file_count;
+                    u64 abfile_count;
+                    u64 rsector_pointer;
+                    u64 rsector_count;
+                    u16 alloc_table_size;
+                    u16 alloc_table_checksum;
+                    u16 res;
+                    u16 sig;
+                } jt2;
+                assert(jt2.JTable2_checksum == sum(jt2) == jt1.JTable2_checksum); ect...
+            6. find the location of each table
+                u64 alloc_table_ptr = jt1.bytes_per_lsector * 64 * jt1.lsector_start;
+                u64 file_table_ptr  = alloc_table_ptr + jt1.bytes_per_lsector * 64 * jt2.alloc_table_size; ect... (you will need to make more structs to load size data from each table)
+        adding new directory:
+            
+// ========================================================================================= //
+
+        

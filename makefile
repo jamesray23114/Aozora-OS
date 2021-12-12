@@ -18,17 +18,17 @@ notime:
 	rm -f $(TEMPDIR)/iso/fat.img $(ENVDIR)/Aozora-OS.iso 
 	touch $(TEMPDIR)/iso/fat.img $(ENVDIR)/Aozora-OS.iso $(ENVDIR)/harddrive.hhd
 
-	truncate -s 4096k  $(TEMPDIR)/iso/fat.img
-	truncate -s 1280m  $(ENVDIR)/Aozora-OS.iso
+	truncate -s 32m  $(TEMPDIR)/iso/fat.img
+	truncate -s 1244m  $(ENVDIR)/Aozora-OS.iso
 	truncate -s 10G    $(ENVDIR)/harddrive.hhd
 #end
 
-	printf "OS: formating iso.fat16\n"
+	printf "OS: formating iso.fat32\n"
 #format iso
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mklabel gpt
-	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart EFI fat16 2048s 10240s 
+	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart EFI fat32 2048s 67584s 
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal name 1 EFI-PART
-	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart primary 10241s 2621406s
+	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart primary 67585s 2547678s
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal name 2 AOZORA-OS-FS-PART
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal toggle 1 boot
 #end
@@ -65,9 +65,12 @@ run: build
 		-m 4096 \
 		-no-reboot \
 		-drive format=raw,if=pflash,file=/usr/share/ovmf/OVMF.fd,readonly=on \
-		-drive format=raw,file=$(ENVDIR)/Aozora-OS.iso \
-		-drive format=raw,file=$(ENVDIR)/harddrive.hhd \
+		-drive format=raw,if=none,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
+		-drive format=raw,if=none,file=$(ENVDIR)/harddrive.hhd,id=harddisk \
+		-device ide-hd,drive=bootdisk,bootindex=2 \
+		-device ide-hd,drive=harddisk,bootindex=1 \
 		-smp 1 -usb -vga std \
+		-serial vc \
 		-d int \
 		-D $(ENVDIR)/qemu-log.txt
 #===end run===
@@ -83,7 +86,10 @@ debug: build
 #===ake push===
 .PHONY: push
 push: 
-	git add src
+	git add boot
+	git add kernel
+	git add tools
+	git add man
 	git add .gitignore
 	git add LICENSE
 	git add makefile
