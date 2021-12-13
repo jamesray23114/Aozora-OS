@@ -3,69 +3,129 @@
 #include <efi.h>
 #include <efilib.h>
 
-struct {
-    EFI_STATUS      Code;
-    WCHAR	        *Desc;
-} Etable[] = {
-	{  EFI_SUCCESS,                L"Success\n"},
-	{  EFI_LOAD_ERROR,             L"Load Error\n"},
-	{  EFI_INVALID_PARAMETER,      L"Invalid Parameter\n"},
-	{  EFI_UNSUPPORTED,            L"Unsupported\n"},
-	{  EFI_BAD_BUFFER_SIZE,        L"Bad Buffer Size\n"},
-	{  EFI_BUFFER_TOO_SMALL,       L"Buffer Too Small\n"},
-	{  EFI_NOT_READY,              L"Not Ready\n"},
-	{  EFI_DEVICE_ERROR,           L"Device Error\n"},
-	{  EFI_WRITE_PROTECTED,        L"Write Protected\n"},
-	{  EFI_OUT_OF_RESOURCES,       L"Out of Resources\n"},
-	{  EFI_VOLUME_CORRUPTED,       L"Volume Corrupt\n"},
-	{  EFI_VOLUME_FULL,            L"Volume Full\n"},
-	{  EFI_NO_MEDIA,               L"No Media\n"},
-	{  EFI_MEDIA_CHANGED,          L"Media changed\n"},
-	{  EFI_NOT_FOUND,              L"Not Found\n"},
-	{  EFI_ACCESS_DENIED,          L"Access Denied\n"},
-	{  EFI_NO_RESPONSE,            L"No Response\n"},
-	{  EFI_NO_MAPPING,             L"No mapping\n"},
-	{  EFI_TIMEOUT,                L"Time out\n"},
-	{  EFI_NOT_STARTED,            L"Not started\n"},
-	{  EFI_ALREADY_STARTED,        L"Already started\n"},
-	{  EFI_ABORTED,                L"Aborted\n"},
-	{  EFI_ICMP_ERROR,             L"ICMP Error\n"},
-	{  EFI_TFTP_ERROR,             L"TFTP Error\n"},
-	{  EFI_PROTOCOL_ERROR,         L"Protocol Error\n"},
-	{  EFI_INCOMPATIBLE_VERSION,   L"Incompatible Version\n"},
-	{  EFI_SECURITY_VIOLATION,     L"Security Policy Violation\n"},
-	{  EFI_CRC_ERROR,              L"CRC Error\n"},
-	{  EFI_END_OF_MEDIA,           L"End of Media\n"},
-	{  EFI_END_OF_FILE,            L"End of File\n"},
-	{  EFI_INVALID_LANGUAGE,       L"Invalid Languages\n"},
-	{  EFI_COMPROMISED_DATA,       L"Compromised Data\n"},
+#include "lib/io.h"
 
-	// warnings
-	{  EFI_WARN_UNKNOWN_GLYPH,     L"Warning Unknown Glyph\n"},
-	{  EFI_WARN_DELETE_FAILURE,    L"Warning Delete Failure\n"},
-	{  EFI_WARN_WRITE_FAILURE,     L"Warning Write Failure\n"},
-	{  EFI_WARN_BUFFER_TOO_SMALL,  L"Warning Buffer Too Small\n"},
-	{  0, NULL}
-};
+// print_num
 
-void errstrcpy(CHAR16 *Buffer, EFI_STATUS Status)
+#if QEMUBUILD
+void print_num(UINT64 num, unsigned char radix, int pad, char padchar)
 {
-    for (int Index = 0; Etable[Index].Desc; Index +=1) {
-        if (Etable[Index].Code == Status) {
+	if(num == 0)
+	{
+		if(pad) pad--;
+		while (pad--) write_com1(padchar);
+		write_com1('0');
+		return;	
+	}
 
-            for(int i = 0; Etable[Index].Desc[i]; i++)
-            {
-                Buffer[i] = Etable[Index].Desc[i];
-            }
-	        return;
-        }
+	char buf[512];
+
+	int i = 0;
+	while(num)
+	{
+		unsigned char c = num % radix;
+		num /= radix;
+		buf[i++] = c < 10 ? c + '0' : c + '7';
+		if(pad) pad--;
+	}
+
+	while (pad--) write_com1(padchar);
+	while (i--) write_com1(buf[i]);
+}
+#else
+void printnum(INT64 num, char radix, int pad, char padchar) { };
+#endif
+
+// print_string
+
+#if QEMUBUILD
+void print_string(char* string)
+{
+	int i = 0;
+	while(string[i]) write_com1(string[i++]);
+}
+#else
+void print_string(char* string) { };
+#endif
+
+// printmmap
+
+inline char* memory_type_to_string(EFI_MEMORY_TYPE type)
+{
+	switch (type)
+	{
+		case EfiReservedMemoryType: 
+			return "EfiReservedMemoryType";
+		case EfiLoaderCode: 
+			return "EfiLoaderCode";
+		case EfiLoaderData: 
+			return "EfiLoaderData";
+		case EfiBootServicesCode: 
+			return "EfiBootServicesCode";
+		case EfiBootServicesData: 
+			return "EfiBootServicesData";
+		case EfiRuntimeServicesCode: 
+			return "EfiRuntimeServicesCode";
+		case EfiRuntimeServicesData: 
+			return "EfiRuntimeServicesData";
+		case EfiConventionalMemory: 
+			return "EfiConventionalMemory";
+		case EfiUnusableMemory: 
+			return "EfiUnusableMemory";
+		case EfiACPIReclaimMemory: 
+			return "EfiACPIReclaimMemory";
+		case EfiACPIMemoryNVS: 
+			return "EfiACPIMemoryNVS";
+		case EfiMemoryMappedIO: 
+			return "EfiMemoryMappedIO";
+		case EfiMemoryMappedIOPortSpace: 
+			return "EfiMemoryMappedIOPortSpace";
+		case EfiPalCode: 
+			return "EfiPalCode";
+		case EfiPersistentMemory:
+			return "EfiPersistentMemory";
+		case EfiMaxMemoryType: 
+			return "EfiMaxMemoryType";
+		default:
+			print_num(type, 10, 1, 0);
+			return "";
+	}
+}
+
+#if QEMUBUILD
+void print_mmap(EFI_MEMORY_DESCRIPTOR* mem_map, UINT64 size)
+{
+
+	print_num(size / sizeof(EFI_MEMORY_DESCRIPTOR), 10, 1, 0);
+	print_string(" number of memory mappings \n\n\r");
+
+    for(int i = 0; i < size / sizeof(EFI_MEMORY_DESCRIPTOR); i++)
+    {
+		print_string("memory ");
+		print_num(i, 10, 2, ' ');
+
+		print_string(":\n\r\t size -> ");
+		print_num(mem_map[i].NumberOfPages * 4096, 10, 1, 0);
+        print_string(" bytes\n\r\t type -> ");
+		print_string(memory_type_to_string(mem_map[i].Type));
+		
+		print_string("\n\r\t flags -> ");
+		if(mem_map[i].Attribute & 0x8000000000000000)
+			print_string(" RT ");
+
+		print_string("\n\r\t physical address: ");
+        print_num(mem_map[i].PhysicalStart, 16, 16, 'x');
+        print_string(" -> ");
+        print_num(mem_map[i].PhysicalStart + mem_map[i].NumberOfPages * 4096, 16, 16, 'x');
+
+		print_string("\n\r\t virtual address:  ");
+        print_num(mem_map[i].VirtualStart, 16, 16, 'x');
+        print_string(" -> ");
+        print_num(mem_map[i].VirtualStart + mem_map[i].NumberOfPages * 4096, 16, 16, 'x');
+
+        print_string("\n\n\r");
     }
 }
-
-void print_efi_status(EFI_STATUS status)
-{
-    WCHAR buf[256] = {0};
-    errstrcpy(buf, status);
-
-    ST->ConOut->OutputString(ST->ConOut, buf);
-}
+#else
+void printmmap(EFI_MEMORY_DESCRIPTOR* mem_map, UINT64 size) { };
+#endif

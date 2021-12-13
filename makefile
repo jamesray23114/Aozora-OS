@@ -75,6 +75,27 @@ run: build
 		-D $(ENVDIR)/qemu-log.txt
 #===end run===
 
+#===make run===
+.PHONY: shell
+shell: build
+
+	printf "STARTING RUN/AOZORA-OS: (OS: )\n"
+
+	rm -f $(ENVDIR)/qemu-log.txt
+	qemu-system-x86_64 \
+		-accel tcg,thread=single \
+		-cpu qemu64 \
+		-m 4096 \
+		-no-reboot \
+		-drive format=raw,if=pflash,file=/usr/share/ovmf/OVMF.fd,readonly=on \
+		-drive format=raw,if=none,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
+		-drive format=raw,if=none,file=$(ENVDIR)/harddrive.hhd,id=harddisk \
+		-smp 1 -usb -vga std \
+		-serial vc \
+		-d int \
+		-D $(ENVDIR)/qemu-log.txt
+#===end shell===
+
 #===make debug===	
 .PHONY: debug
 debug: build
