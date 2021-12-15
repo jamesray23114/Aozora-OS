@@ -1,6 +1,6 @@
 .SILENT:
 
-CFLAGS_BOOT := -ffreestanding -fshort-wchar -mno-red-zone -I ../_build/gnu-efi/inc -I ../_build/gnu-efi/inc/x86_64 -I ../_build/gnu-efi/inc/protocol -I src/ -Ofast -D QEMUBUILD=1
+CFLAGS_BOOT := -ffreestanding -fshort-wchar -mno-red-zone -I ../_build/gnu-efi/inc -I ../_build/gnu-efi/inc/x86_64 -I ../_build/gnu-efi/inc/protocol -I src -I ../common -Ofast -D QEMUBUILD=1
 LFLAGS_BOOT := -nostdlib -Wl,-dll -shared -Wl,--subsystem,10 -e efi_main 
 TEMPDIR := ../_temp/boot
 ENVDIR := ../_env

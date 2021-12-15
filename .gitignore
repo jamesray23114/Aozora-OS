@@ -3,3 +3,4 @@ _build/
 _env/
 srcold
 .vscode
+dump.asm

@@ -82,7 +82,7 @@ jfs: (version number 1)
     jfs read only record: (first sector on part, should not be changed during normal file management and only changed when repartitioning disk)
         00 - 03: short jump to boot code followed by noop (EB xx 90), can be made in (FA F4 90) to signify system is not bootable
         03 - 08: identifier (usage can be whatever, might to smart to have some standardize system for this but for the time being dont rely on this value)
-        08 - 10: version (starts at 1, idea is this should be used to determine any revisions done to future versions of the jfs ) 
+        08 - 10: version (starts at 1, idea is this should be used to determine any revisions done to future versions of the jfs) 
         10 - 12: bytes per logical sector multiplied by 64 (cluster / sector ect..., typically a multiple of 512 (8), max logical sector size is 4mib)
         12 - 14: logical sector offset (for use with bios code, should be one normally as first J record takes up one logical sector)
         14 - 16: number of copies of each table (used for redundency)

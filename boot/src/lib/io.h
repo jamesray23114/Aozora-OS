@@ -1,7 +1,6 @@
 #pragma once    
 
 #include <efi.h>
-#include <efilib.h>
 
 #define RTSV ST->RuntimeServices // cSpell:ignore RTSV
 
@@ -9,13 +8,13 @@ BOOLEAN com1_init = 0;
 
 void inline outb(int64_t address, char data)
 {
-    asm volatile ( "outb %0, %1" : : "a" (data), "Nd" (address));
+    asm ( "outb %0, %1\n" : : "a" (data), "Nd" (address) );
 }
 
 char inline inb(int64_t address)
 {
     char data;
-    asm volatile( "inb %1, %0" : "=a" (data) : "Nd" (address) );
+    asm ( "inb %1, %0\n" : "=a" (data) : "Nd" (address) );
 
     return data;
 }   

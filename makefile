@@ -18,17 +18,17 @@ notime:
 	rm -f $(TEMPDIR)/iso/fat.img $(ENVDIR)/Aozora-OS.iso 
 	touch $(TEMPDIR)/iso/fat.img $(ENVDIR)/Aozora-OS.iso $(ENVDIR)/harddrive.hhd
 
-	truncate -s 32m  $(TEMPDIR)/iso/fat.img
-	truncate -s 1244m  $(ENVDIR)/Aozora-OS.iso
-	truncate -s 10G    $(ENVDIR)/harddrive.hhd
+	truncate -s 32m  	$(TEMPDIR)/iso/fat.img
+	truncate -s 1244m  	$(ENVDIR)/Aozora-OS.iso
+	truncate -s 10G   	 $(ENVDIR)/harddrive.hhd
 #end
 
 	printf "OS: formating iso.fat32\n"
 #format iso
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mklabel gpt
-	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart EFI fat32 2048s 67584s 
+	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart EFI fat32 2048s 67583s 
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal name 1 EFI-PART
-	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart primary 67585s 2547678s
+	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart primary 67584s 2547678s
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal name 2 AOZORA-OS-FS-PART
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal toggle 1 boot
 #end
@@ -88,8 +88,8 @@ shell: build
 		-m 4096 \
 		-no-reboot \
 		-drive format=raw,if=pflash,file=/usr/share/ovmf/OVMF.fd,readonly=on \
-		-drive format=raw,if=none,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
-		-drive format=raw,if=none,file=$(ENVDIR)/harddrive.hhd,id=harddisk \
+		-drive format=raw,file=$(ENVDIR)/Aozora-OS.iso \
+		-drive format=raw,file=$(ENVDIR)/harddrive.hhd \
 		-smp 1 -usb -vga std \
 		-serial vc \
 		-d int \

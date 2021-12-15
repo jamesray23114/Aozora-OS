@@ -45,7 +45,7 @@ typedef union WritableRecord
 
 ReadonlyRecord load_readonly_record()
 {
-    s JR1 jr;
+    sJR1 jr;
 
     return jr;
 }
