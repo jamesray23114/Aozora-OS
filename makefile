@@ -5,16 +5,12 @@ ENVDIR := _env
 
 #===make build=== 
 .PHONY: build
-build: 
-	/usr/bin/time -f "make finished in %e seconds" make notime
-
-.PHONY: notime
-notime:
+build:
 	printf "STARTING BUILD/AOZORA-OS: (OS: )\n"
 
 	printf "OS: making common files\n"
 #create needed files
-	mkdir -p $(TEMPDIR)/iso $(_env)
+	mkdir -p $(TEMPDIR)/iso $(ENVDIR)
 	rm -f $(TEMPDIR)/iso/fat.img $(ENVDIR)/Aozora-OS.iso 
 	touch $(TEMPDIR)/iso/fat.img $(ENVDIR)/Aozora-OS.iso $(ENVDIR)/harddrive.hhd
 
@@ -36,18 +32,17 @@ notime:
 	printf "OS: building files\n"
 #building subdirs
 	printf "OS: STARTING BUILD/BOOT: (BT: )\n"
-	make -C boot build
+	make -C boot build --no-print-directory
 	printf "OS: STARTING BUILD/KERNEL: (KN: )\n"
-	make -C kernel build
+	make -C kernel build --no-print-directory
 	printf "OS: STARTING BUILD/TOOLS: (TL: )\n"
-	make -C tools build
+	make -C tools build --no-print-directory
 #end
 #===end build=== 
 
 #===make clean===
 .PHONY: clean
 clean:
-	/usr/bin/time -f "make finished in %e seconds" \
 	rm -r $(TEMPDIR) && mkdir $(TEMPDIR) && \
 	rm -r $(ENVDIR) && mkdir $(ENVDIR)
 #===end clean===
@@ -64,7 +59,7 @@ run: build
 		-cpu qemu64 \
 		-m 4096 \
 		-no-reboot \
-		-drive format=raw,if=pflash,file=/usr/share/ovmf/OVMF.fd,readonly=on \
+		-drive format=raw,if=pflash,file=/usr/share/ovmf/x64/OVMF.fd,readonly=on \
 		-drive format=raw,if=none,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
 		-drive format=raw,if=none,file=$(ENVDIR)/harddrive.hhd,id=harddisk \
 		-device ide-hd,drive=bootdisk,bootindex=2 \
@@ -87,7 +82,7 @@ shell: build
 		-cpu qemu64 \
 		-m 4096 \
 		-no-reboot \
-		-drive format=raw,if=pflash,file=/usr/share/ovmf/OVMF.fd,readonly=on \
+		-drive format=raw,if=pflash,file=/usr/share/ovmf/x64/OVMF.fd,readonly=on \
 		-drive format=raw,file=$(ENVDIR)/Aozora-OS.iso \
 		-drive format=raw,file=$(ENVDIR)/harddrive.hhd \
 		-smp 1 -usb -vga std \

@@ -1,40 +1,24 @@
-#include <efi.h>
- 
-#include "lib/print.h"
-#include "lib/gop.h"
-#include "lib/io.h"
+#include <efi/efi.h>
 
-#include "efi/memmap.h"
-
-#define COUT ST->ConOut
-#define CIN  ST->ConIn
-#define BTSV ST->BootServices    // cSpell:ignore BTSV
-#define RTSV ST->RuntimeServices // cSpell:ignore RTSV
+#include <lib/memmap.h> 
+#include <lib/print.h>
+#include <lib/gop.h>
+#include <lib/io.h>
 
 void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 {
     ST = SystemTable;
     BS = SystemTable->BootServices;
-    char* memory = 0;
 
-    BTSV->SetWatchdogTimer(0, 0, 0, NULL);
+    BTSV->SetWatchdogTimer(0, 0, 0, null);
     COUT->ClearScreen(COUT);
 
     EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = locateGOP();
-    set_graphics_mode(gop, 8);
+    get_graphics_mode(gop, 5);
+    set_graphics_mode(gop, 5);
 
-    EFI_MEMORY_DESCRIPTOR     memmap[80];
-    UINTN                     size = sizeof(memmap);
-    UINTN                     key;
-
-    BTSV->GetMemoryMap(&size, memmap, &key, null, null);
-    BTSV->ExitBootServices(ImageHandle, key);
-
-    memmap_cull(memmap, &size);
-    print_mmap(memmap, size);
-
-    uintn asize = traslate_map(memmap, &size);
-    print_amap(asize);
+    fetch_memory_map(ImageHandle, gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
+    print_map();
 
     while (1);
 }

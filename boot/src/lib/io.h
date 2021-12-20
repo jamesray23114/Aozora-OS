@@ -1,17 +1,15 @@
 #pragma once    
 
-#include <efi.h>
+#include <efi/efi.h>
 
-#define RTSV ST->RuntimeServices // cSpell:ignore RTSV
+bool com1_init = 0;
 
-BOOLEAN com1_init = 0;
-
-void inline outb(int64_t address, char data)
+void inline outb(int64 address, char data)
 {
     asm ( "outb %0, %1\n" : : "a" (data), "Nd" (address) );
 }
 
-char inline inb(int64_t address)
+char inline inb(int64 address)
 {
     char data;
     asm ( "inb %1, %0\n" : "=a" (data) : "Nd" (address) );
@@ -32,7 +30,7 @@ void init_com1()
     outb(0x3f8 + 0, 77);
 
     if(inb(0x3f8) != 77) {
-      RTSV->ResetSystem(EfiResetCold, EFI_SUCCESS, 0, NULL);
+      RTSV->ResetSystem(EfiResetCold, 0, 0, null);
    }
 
    outb(0x3f8 + 4, 0x0F);
