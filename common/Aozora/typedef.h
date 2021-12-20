@@ -3,12 +3,9 @@
 #define _U unsigned
 
 #define true 1
-//#define TRUE 1
 #define false 0
-//#define FALSE 0
 
 #define null 0
-//#define NULL 0
 #define nullptr (void*) 0
 
 typedef _U char         byte;
@@ -28,5 +25,9 @@ typedef    uint64       uintn;
 
 typedef    byte*        memory;
 
+typedef    uint8        bool;
+typedef    uint8        aozora_status;
 
 #undef _U
+
+memory         ram        = 0;
