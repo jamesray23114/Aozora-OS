@@ -10,7 +10,7 @@ build:
 
 	printf "OS: making common files\n"
 #create needed files
-	mkdir -p $(TEMPDIR)/iso $(ENVDIR)
+	mkdir -p $(TEMPDIR)/iso $(ENVDIR) _build
 	rm -f $(TEMPDIR)/iso/fat.img $(ENVDIR)/Aozora-OS.iso 
 	touch $(TEMPDIR)/iso/fat.img $(ENVDIR)/Aozora-OS.iso $(ENVDIR)/harddrive.hhd
 
