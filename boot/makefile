@@ -1,6 +1,6 @@
 .SILENT:
 
-CFLAGS_BOOT := -ffreestanding -fno-stack-protector -fshort-wchar -mno-red-zone -I src -I ../common -Ofast -D QEMUBUILD=1
+CFLAGS_BOOT := -ffreestanding -fno-stack-protector -fshort-wchar -mno-red-zone -I src -I ../common -Ofast -D QEMUBUILD=1  -mno-ms-bitfields
 LFLAGS_BOOT := -nostdlib -Wl,-dll -shared -Wl,--subsystem,10 -e efi_main 
 TEMPDIR := ../_temp/boot
 ENVDIR := ../_env

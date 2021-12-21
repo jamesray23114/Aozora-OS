@@ -65,7 +65,7 @@ typedef struct {
     EFI_VIRTUAL_ADDRESS             VirtualStart;   
     uint64                          NumberOfPages;  
     uint64                          Attribute;      
-} EFI_MEMORY_DESCRIPTOR;
+} __attribute__((packed)) EFI_MEMORY_DESCRIPTOR;
 
 typedef struct _EFI_DEVICE_PATH_PROTOCOL {
         byte                           Type;

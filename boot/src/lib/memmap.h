@@ -5,118 +5,157 @@
 
 #include "lib/print.h"
 
-void traslate_map(EFI_MEMORY_DESCRIPTOR* memmap, uintn size)
+void traslate_map(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) // translates broken uefi implimentation of uefi
 {
-    uintn asize = size / sizeof(EFI_MEMORY_DESCRIPTOR);
+    uintn asize = size / descsize;
 
     uintn last = 0, maxsize = 0;
     bool ismapped = false;
+    aozora_memory_type lasttype = AOZORA_MEMORY_INVALID;
 
-    for(int i = 0, j = 0; i <= size / sizeof(EFI_MEMORY_DESCRIPTOR); i++)
+    for(int i = 0, j = 0; i <= size / descsize; i++)
     {
-        if(memmap[i].Type == EfiMaxMemoryType && !maxsize)
+        EFI_MEMORY_DESCRIPTOR currmem = *(EFI_MEMORY_DESCRIPTOR*)((uintn) memmap + (i * descsize));
+
+        switch (currmem.Type)
         {
-            maxsize = memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
-            asize--;
-            j++;
-        }
-        else if(memmap[i].PhysicalStart <= 0x10)
-        {
-            asize--;
-            j++;
-        }
-        else if(memmap[i].Type == EfiRuntimeServicesCode || memmap[i].Type == EfiRuntimeServicesData || memmap[i].Type == EfiPalCode)
-        {   
-            aos_memmap[i - j + 1].type =          AOZORA_MEMORY_FREE;
-            aos_memmap[i - j + 1].low_address =   last; 
-            aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart;
+        case EfiReservedMemoryType:
+        case EfiRuntimeServicesCode:
+        case EfiRuntimeServicesData:
+        case EfiPalCode:
+        case EfiMaxMemoryType:
+        default:
+            if(lasttype != AOZORA_MEMORY_RESERVED)
+            {
+                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_RESERVED;
+                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
+                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                //j--;
+                lasttype = AOZORA_MEMORY_RESERVED;
+            }
+            else
+            {
+                j++; 
+                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                asize--;
+            }
+            break;
 
-            j--; asize++;
 
-            aos_memmap[i - j + 1].type =          AOZORA_MEMORY_RESERVED;
-            aos_memmap[i - j + 1].low_address =   memmap[i].PhysicalStart;
-            aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
+        case EfiConventionalMemory:
+        case EfiACPIReclaimMemory:
+        case EfiBootServicesCode:
+        case EfiBootServicesData:
+            if(lasttype != AOZORA_MEMORY_FREE)
+            {
+                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_FREE;
+                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
+                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                //j--;
+                lasttype = AOZORA_MEMORY_FREE;
+            }
+            else
+            {
+                j++; 
+                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                asize--;
+            }
+            break;
 
-            last = memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
-        }
-        else if(memmap[i].Type == EfiACPIReclaimMemory)
-        {
-            aos_memmap[i - j + 1].type =          AOZORA_MEMORY_FREE;
-            aos_memmap[i - j + 1].low_address =   last; 
-            aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart;
 
-            j--; asize++;
+        case EfiPersistentMemory:
+            if(lasttype != AOZORA_MEMORY_PERSISTENT)
+            {
+                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_PERSISTENT;
+                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
+                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                //j--;
+                lasttype = AOZORA_MEMORY_PERSISTENT;
+            }
+            else
+            {
+                j++; 
+                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                asize--;
+            }
+            break;
 
-            aos_memmap[i - j + 1].type =          AOZORA_MEMORY_ACPI;
-            aos_memmap[i - j + 1].low_address =   memmap[i].PhysicalStart;
-            aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
 
-            last = memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
-        }
-        else if(memmap[i].Type == EfiACPIMemoryNVS)
-        {
-            aos_memmap[i - j + 1].type =          AOZORA_MEMORY_FREE;
-            aos_memmap[i - j + 1].low_address =   last; 
-            aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart;
+        case EfiUnusableMemory:
+            if(lasttype != AOZORA_MEMORY_BAD)
+            {
+                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_BAD;
+                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
+                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                //j--;
+                lasttype = AOZORA_MEMORY_BAD;
+            }
+            else
+            {
+                j++; 
+                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                asize--;
+            }
+            break;
 
-            j--; asize++;
+        case EfiLoaderCode:
+        case EfiLoaderData:
+            if(lasttype != AOZORA_MEMORY_BOOT)
+            {
+                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_BOOT;
+                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
+                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                //j--;
+                lasttype = AOZORA_MEMORY_BOOT;
+            }
+            else
+            {
+                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                j++;
+            }
+            break;            
+   
 
-            aos_memmap[i - j + 1].type =          AOZORA_MEMORY_NVS;
-            aos_memmap[i - j + 1].low_address =   memmap[i].PhysicalStart;
-            aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
+        case EfiACPIMemoryNVS:
+            if(lasttype != AOZORA_MEMORY_NVS)
+            {
+                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_NVS;
+                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
+                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                //j--;
+                lasttype = AOZORA_MEMORY_NVS;
+            }
+            else
+            {
+                j++; 
+                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                asize--;
+            }
+            maxsize = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+            break; 
 
-            last = memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
-        }
-        else if(memmap[i].Type == EfiMemoryMappedIO || memmap[i].Type == EfiMemoryMappedIOPortSpace)
-        {
-            aos_memmap[i - j + 1].type =          AOZORA_MEMORY_FREE;
-            aos_memmap[i - j + 1].low_address =   last; 
-            aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart;
 
-            j--; asize++;
+        case EfiMemoryMappedIO:
+        case EfiMemoryMappedIOPortSpace:
+            if(lasttype != AOZORA_MEMORY_IO)
+            {
+                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_IO;
+                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
+                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                //j--;
+                lasttype = AOZORA_MEMORY_IO;
+            }
+            else
+            {
+                j++; 
+                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                asize--;
+            }
+            break;        
+        }   
+    }    
 
-            aos_memmap[i - j + 1].type =          AOZORA_MEMORY_IO;
-            aos_memmap[i - j + 1].low_address =   memmap[i].PhysicalStart;
-            aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
-
-            last = memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
-        }
-        else if(memmap[i].Type == EfiLoaderCode || memmap[i].Type == EfiLoaderData)
-        {
-            aos_memmap[i - j + 1].type =          AOZORA_MEMORY_FREE;
-            aos_memmap[i - j + 1].low_address =   last; 
-            aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart;
-
-            j--; asize++;
-
-            aos_memmap[i - j + 1].type =          AOZORA_MEMORY_CODE;
-            aos_memmap[i - j + 1].low_address =   memmap[i].PhysicalStart;
-            aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
-
-            last = memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
-        }
-        else 
-        {
-            //aos_memmap[i - j + 1].type =          AOZORA_MEMORY_INVALID;
-            //aos_memmap[i - j + 1].low_address =   memmap[i].PhysicalStart;
-            //aos_memmap[i - j + 1].high_address =  memmap[i].PhysicalStart + memmap[i].NumberOfPages * 4096;
-            asize--;
-            j++;
-        }    
-    }
-
-    asize++; asize++;
-
-    if(aos_memmap[asize - 1].high_address != maxsize)
-    {
-        aos_memmap[asize].type =            AOZORA_MEMORY_FREE;
-        aos_memmap[asize].low_address =     last; 
-        aos_memmap[asize].high_address =    maxsize;
-    }
-    else
-        asize--;
-
-    aos_memmap[0].type =                AOZORA_MEMORY_SIZEZERO;
+    aos_memmap[0].type =                AOZORA_MEMORY_INVALID;
     aos_memmap[0].low_address =         asize;
     aos_memmap[0].high_address =        maxsize;
 }
@@ -127,20 +166,26 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle, uintn gopbase, uintn gopsi
     uintn                     size = sizeof(memmap);
     uintn                     key;
     uintn                     maxmem;
+    uintn                     descsize;
+    uint32                    ver;
 
     BTSV->GetMemoryMap(&size, memmap, &key, null, null);
     size = size + sizeof(EFI_MEMORY_DESCRIPTOR) * 2;
     BTSV->AllocatePool(EfiLoaderData, size, (void**) &memmap);
 
-    BTSV->GetMemoryMap(&size, memmap, &key, null, null);
+    BTSV->GetMemoryMap(&size, memmap, &key, &descsize, &ver);
     BTSV->ExitBootServices(mainhandle, key);
 
-    traslate_map(memmap, size);
+    traslate_map(memmap, size, descsize);
 
+    aozora_memory test   = {AOZORA_MEMORY_KERNEL, 0xb000, 0xf000};
     aozora_memory mapmem = {AOZORA_MEMORY_MAP, 0x8000, 0x8000 + 24 * 512};
     aozora_memory gopmem = {AOZORA_MEMORY_GOP, gopbase, gopbase + gopsize};
+    addmap(test); 
     addmap(mapmem); 
     addmap(gopmem);
+
+    print_mmap(memmap, size, descsize);
 
     return 0;
 }

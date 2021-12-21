@@ -57,7 +57,7 @@ run: build
 	qemu-system-x86_64 \
 		-accel tcg,thread=single \
 		-cpu qemu64 \
-		-m 4096 \
+		-m 3.4G \
 		-no-reboot \
 		-drive format=raw,if=pflash,file=/usr/share/ovmf/x64/OVMF.fd,readonly=on \
 		-drive format=raw,if=none,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
