@@ -30,4 +30,4 @@ typedef    uint8        aozora_status;
 
 #undef _U
 
-memory         ram        = 0;
+static     memory       ram = 0;

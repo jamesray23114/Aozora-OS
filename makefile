@@ -104,6 +104,7 @@ debug: build
 #===ake push===
 .PHONY: push
 push: 
+	git add .
 	git add boot
 	git add kernel
 	git add tools
