@@ -81,12 +81,14 @@ shell: build
 	rm -f $(ENVDIR)/qemu-log.txt
 	qemu-system-x86_64 \
 		-accel tcg,thread=single \
-		-cpu qemu64,pcid=on \
+		-cpu Nehalem, \
 		-m 4096 \
 		-no-reboot \
 		-drive format=raw,if=pflash,file=/usr/share/ovmf/x64/OVMF.fd,readonly=on \
-		-drive format=raw,file=$(ENVDIR)/Aozora-OS.iso \
-		-drive format=raw,file=$(ENVDIR)/harddrive.hhd \
+		-drive format=raw,if=none,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
+		-drive format=raw,if=none,file=$(ENVDIR)/harddrive.hhd,id=harddisk \
+		-device ide-hd,drive=bootdisk,bootindex=10 \
+		-device ide-hd,drive=harddisk,bootindex=9 \
 		-smp 1 -usb -vga std \
 		-serial vc \
 		-d int \
@@ -96,22 +98,14 @@ shell: build
 #===make debug===	
 .PHONY: debug
 debug: build
-	objdump -D -Mintel,i8086 -m i8086 $(TEMPDIR)disk/disk.elf > $(TEMPDIR)objdump16.asm
-	objdump -D -Mintel,i386 -M i386 $(TEMPDIR)disk/disk.elf > $(TEMPDIR)objdump32.asm
-	objdump -D -Mintel,x86-64 -M x86-64 $(TEMPDIR)disk/disk.elf > $(TEMPDIR)objdump64.asm
+	mkdir -p _dump
+	objdump -D -Mintel,x86-64 _temp/boot/BOOTX64.EFI > _dump/boot.asm
 #===end debug===
 
 #===ake push===
 .PHONY: push
 push: 
 	git add .
-	git add boot
-	git add kernel
-	git add tools
-	git add man
-	git add .gitignore
-	git add LICENSE
-	git add makefile
 	printf "Add commit message: " 
 	read VAR 											; \
 	MAJOR=$$(sed '1!d' _build/VERSION.txt) 				; \

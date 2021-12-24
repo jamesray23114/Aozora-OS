@@ -185,6 +185,8 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
         gm.horizontal_resolution =  gop->Mode->Info->HorizontalResolution;
         gm.vertical_resolution =    gop->Mode->Info->VerticalResolution;
         gm.pitch =                  gop->Mode->Info->PixelsPerScanLine;
+        gm.resolution =             gm.horizontal_resolution * gm.vertical_resolution;
+        gm.location =               (uint32*) gop->Mode->FrameBufferBase;
 
         *gl_mode = gm;
     }
@@ -196,6 +198,7 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
     BTSV->GetMemoryMap(&size, memmap, &key, &descsize, &ver);
     BTSV->ExitBootServices(mainhandle, key);
 
+    //set_resolution(gop, 1920, 1080); 
 
     //for(uintn i = 0; i < size / descsize; i++)
     //{
@@ -223,12 +226,14 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
 
     aozora_memory etcmem = {AOZORA_MEMORY_KERNEL, 0, 0x4000};
     aozora_memory mapmem = {AOZORA_MEMORY_MAP, 0x4000, 0x34000};
-    aozora_memory knlmem = {AOZORA_MEMORY_KERNEL, 0x34000, 0x240000};
+    aozora_memory knlmem = {AOZORA_MEMORY_KERNEL, 0x34000, 0x234000};
+    aozora_memory stack  = {AOZORA_MEMORY_KERNEL, 0x234000, 0x240000};
     aozora_memory etcmap = {AOZORA_MEMORY_MAP, 0x240000, 0x250000};
     aozora_memory gopmem = {AOZORA_MEMORY_GOP, gopbase, gopbase + gopsize};
     addmap(etcmem);
     addmap(mapmem); 
     addmap(knlmem);
+    addmap(stack);
     addmap(etcmap);
     addmap(gopmem);
     

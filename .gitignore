@@ -1,5 +1,5 @@
 _temp/
 _build/
 _env/
+_dump/
 .vscode
-mem.asm

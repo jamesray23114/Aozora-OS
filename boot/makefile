@@ -1,7 +1,7 @@
 .SILENT:
 
-CFLAGS_BOOT := -ffreestanding -fno-stack-protector -fshort-wchar -mno-red-zone -I src -I ../common -Ofast -D QEMUBUILD=1  -mno-ms-bitfields
-LFLAGS_BOOT := -nostdlib -dll -shared --subsystem 10 -e efi_main 
+CFLAGS_BOOT := -ffreestanding -flto -fno-stack-protector -fshort-wchar -mno-red-zone -I src -I ../common -Ofast -D QEMUBUILD=1  -mno-ms-bitfields
+LFLAGS_BOOT := -nostdlib -flto -Wl,-dll -shared -Wl,--subsystem,10 -e efi_main -Ofast 
 TEMPDIR := ../_temp/boot
 ENVDIR := ../_env
 ISODIR := ../_temp/iso
@@ -19,7 +19,7 @@ $(BOOT_OBJ_FILES): $(TEMPDIR)/%.o : ./%.c
 build: $(BOOT_OBJ_FILES)
 	printf "\tBT: linking BOOTX64\n"
 #linking files
-	x86_64-w64-mingw32-ld $(LFLAGS_BOOT) -o $(TEMPDIR)/BOOTX64.EFI $(BOOT_OBJ_FILES) $(COM_OBJ_FILES)
+	x86_64-w64-mingw32-gcc $(LFLAGS_BOOT) -o $(TEMPDIR)/BOOTX64.EFI $(BOOT_OBJ_FILES) $(COM_OBJ_FILES)
 #end
 
 	printf "\tBT: formatting and copying files\n"

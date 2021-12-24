@@ -101,7 +101,7 @@ void addmap(aozora_memory memory) // does no check to ensure memory can fit in m
 
 }
 
-bool validatetype(aozora_memory_type type) // returns true for types that should not be alocated or freed
+inline bool validatetype(aozora_memory_type type) // returns true for types that should not be alocated or freed
 {
     switch (type)
     {
