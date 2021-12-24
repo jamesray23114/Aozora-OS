@@ -1,8 +1,4 @@
-#pragma once    
-
-#include <efi/efi.h>
-
-bool com1_init = 0;
+#include <bootlib/io.h>
 
 void inline outb(int64 address, char data)
 {
@@ -34,14 +30,9 @@ void init_com1()
    }
 
    outb(0x3f8 + 4, 0x0F);
-
-   com1_init = 1;
 }
 
-void write_com1(char data)
+inline void write_com1(char data)
 {
-    if(!com1_init)
-        init_com1();
-
     outb(0x3f8, data);  
 }

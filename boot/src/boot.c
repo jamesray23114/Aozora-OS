@@ -1,9 +1,12 @@
 #include <efi/efi.h>
 
-#include <lib/memmap.h> 
-#include <lib/print.h>
-#include <lib/gop.h>
-#include <lib/io.h>
+#include <bootlib/memmap.h> 
+#include <bootlib/print.h>
+#include <bootlib/gop.h>
+#include <bootlib/io.h>
+
+EFI_SYSTEM_TABLE*   ST;
+EFI_BOOT_SERVICES*  BS;
 
 void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 {
@@ -13,14 +16,11 @@ void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
     BTSV->SetWatchdogTimer(0, 0, 0, null);
     COUT->ClearScreen(COUT);
 
-    EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = locateGOP();
-    get_graphics_mode(gop, 5);
-    set_graphics_mode(gop, 5);
+    fetch_memory_map(ImageHandle);
 
-    fetch_memory_map(ImageHandle, gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
-    print_map();
+    //print_map();
 
-    while (1);
+    while(1);
 }
 
 //asm ("call getrip\n getrip: mov (%%esp), %0\n" : "=r" (reg));

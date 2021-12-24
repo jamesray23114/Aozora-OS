@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Aozora/typedef.h>
+#include <lib/typedef.h>
 
 typedef uintn           EFI_STATUS;
 typedef uint64          EFI_LBA;

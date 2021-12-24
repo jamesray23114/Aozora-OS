@@ -1,19 +1,25 @@
 .SILENT:
 
 CFLAGS_BOOT := -ffreestanding -fno-stack-protector -fshort-wchar -mno-red-zone -I src -I ../common -Ofast -D QEMUBUILD=1  -mno-ms-bitfields
-LFLAGS_BOOT := -nostdlib -Wl,-dll -shared -Wl,--subsystem,10 -e efi_main 
+LFLAGS_BOOT := -nostdlib -dll -shared --subsystem 10 -e efi_main 
 TEMPDIR := ../_temp/boot
 ENVDIR := ../_env
 ISODIR := ../_temp/iso
 
-.PHONY: build
-build:
-	mkdir -p $(TEMPDIR)
+BOOT_C_FILES := $(shell find ** -name *.c)
+BOOT_OBJ_FILES := $(patsubst %.c, $(TEMPDIR)/%.o, $(BOOT_C_FILES))
+COM_OBJ_FILES := $(shell find ../_temp/common/** -name *.o)
 
-	printf "\tBT: running wingcc\n"
-#building files
-	x86_64-w64-mingw32-gcc $(CFLAGS_BOOT) -c -o $(TEMPDIR)/boot.o   src/boot.c
-	x86_64-w64-mingw32-gcc $(LFLAGS_BOOT) -o $(TEMPDIR)/BOOTX64.EFI $(TEMPDIR)/boot.o 
+$(BOOT_OBJ_FILES): $(TEMPDIR)/%.o : ./%.c
+	printf "\tBT: compiling %s\n" $(patsubst $(TEMPDIR)/%.o, %.c, $@)
+	mkdir -p $(dir $@)
+	x86_64-w64-mingw32-gcc $(CFLAGS_BOOT) -c $(patsubst $(TEMPDIR)/%.o, %.c, $@) -o $@
+
+.PHONY: build
+build: $(BOOT_OBJ_FILES)
+	printf "\tBT: linking BOOTX64\n"
+#linking files
+	x86_64-w64-mingw32-ld $(LFLAGS_BOOT) -o $(TEMPDIR)/BOOTX64.EFI $(BOOT_OBJ_FILES) $(COM_OBJ_FILES)
 #end
 
 	printf "\tBT: formatting and copying files\n"

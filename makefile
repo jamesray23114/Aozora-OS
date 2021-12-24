@@ -31,6 +31,8 @@ build:
 
 	printf "OS: building files\n"
 #building subdirs
+	printf "OS: STARTING BUILD/COMMON: (CM: )\n"
+	make -C common build --no-print-directory
 	printf "OS: STARTING BUILD/BOOT: (BT: )\n"
 	make -C boot build --no-print-directory
 	printf "OS: STARTING BUILD/KERNEL: (KN: )\n"
@@ -56,8 +58,8 @@ run: build
 	rm -f $(ENVDIR)/qemu-log.txt
 	qemu-system-x86_64 \
 		-accel tcg,thread=single \
-		-cpu qemu64 \
-		-m 3.4G \
+		-cpu Nehalem, \
+		-m 4G \
 		-no-reboot \
 		-drive format=raw,if=pflash,file=/usr/share/ovmf/x64/OVMF.fd,readonly=on \
 		-drive format=raw,if=none,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
@@ -79,7 +81,7 @@ shell: build
 	rm -f $(ENVDIR)/qemu-log.txt
 	qemu-system-x86_64 \
 		-accel tcg,thread=single \
-		-cpu qemu64 \
+		-cpu qemu64,pcid=on \
 		-m 4096 \
 		-no-reboot \
 		-drive format=raw,if=pflash,file=/usr/share/ovmf/x64/OVMF.fd,readonly=on \

@@ -8,5 +8,5 @@
 #define COUT ST->ConOut
 #define CIN  ST->ConIn
 
-EFI_SYSTEM_TABLE*   ST;
-EFI_BOOT_SERVICES*  BS;
+extern EFI_SYSTEM_TABLE*   ST;
+extern EFI_BOOT_SERVICES*  BS;

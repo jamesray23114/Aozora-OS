@@ -1,7 +1,7 @@
 #pragma once
 
 #include "efidef.h"
-#include <Aozora/typedef.h>
+#include <lib/typedef.h>
 
 struct _SIMPLE_TEXT_OUTPUT_INTERFACE;
 struct _SIMPLE_INPUT_INTERFACE;
