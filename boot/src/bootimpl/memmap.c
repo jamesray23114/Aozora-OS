@@ -237,7 +237,7 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
     addmap(etcmap);
     addmap(gopmem);
     
-    print_map();
+    //print_map();
 
     return 0;
 

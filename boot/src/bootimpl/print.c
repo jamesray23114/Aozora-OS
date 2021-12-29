@@ -1,6 +1,6 @@
 #include <bootlib/print.h>
 
-void print_num(int64 num, unsigned char radix, int pad, char padchar)
+void print_num(int64 num, const byte radix, byte pad, char padchar)
 {
 	if(num == 0)
 	{

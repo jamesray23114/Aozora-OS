@@ -128,12 +128,12 @@ inline bool validatetype(aozora_memory_type type) // returns true for types that
     }
 }
 
-void* mapalloc(void* ptr, uintn* size, aozora_memory_type type)
+void* mapalloc(uintn* size, aozora_memory_type type)
 {
     uintn mapsize = aos_memmap[0].low_address;
     uintn maxsize = aos_memmap[0].high_address;
 
-    ptr = 0;
+    void* ptr = 0;
 
     if(*size == 0 || *size > maxsize || validatetype(type))
         return 0;
@@ -148,7 +148,7 @@ void* mapalloc(void* ptr, uintn* size, aozora_memory_type type)
                 t.low_address = aos_memmap[i].low_address;
                 t.type = type;
                 
-                if(aos_memmap[i].high_address - aos_memmap[i].low_address - 0x100000 <= *size)   
+                if(aos_memmap[i].high_address - aos_memmap[i].low_address - 0x100000 <= *size || aos_memmap[i].high_address - aos_memmap[i].low_address - 0x100000 >= __INT64_MAX__)   
                 {             
                     t.high_address = aos_memmap[i].high_address;
                     *size = aos_memmap[i].high_address - aos_memmap[i].low_address;

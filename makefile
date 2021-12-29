@@ -102,7 +102,7 @@ debug: build
 	objdump -D -Mintel,x86-64 _temp/boot/BOOTX64.EFI > _dump/boot.asm
 #===end debug===
 
-#===ake push===
+#===make push===
 .PHONY: push
 push: 
 	git add .
@@ -116,3 +116,6 @@ push:
 	PATCH=$$(($$PATCH+1)) ; printf "$$MAJOR\n$$MINOR\n$$PATCH" > _build/VERSION.txt
 	git push
 #===end push===
+
+.PHONY: full
+full: clean run

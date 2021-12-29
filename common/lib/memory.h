@@ -7,7 +7,7 @@ typedef struct aozora_memory_s aozora_memory;
 
 void splitmap(uintn at, uintn size, const byte loc);
 void addmap(aozora_memory memory); // does no check to ensure memory can fit in memmap
-void* mapalloc(void* ptr, uintn* size, aozora_memory_type type);
+void* mapalloc(uintn* size, aozora_memory_type type);
 void mapfree(void* ptr);
 
 typedef enum aozora_memory_type_e
