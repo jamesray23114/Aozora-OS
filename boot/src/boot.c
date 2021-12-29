@@ -20,13 +20,17 @@ void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
     BTSV->SetWatchdogTimer(0, 0, 0, null);
     COUT->ClearScreen(COUT);
 
-    fetch_memory_map(ImageHandle);
+    if( fetch_memory_map(ImageHandle) )
+        while(1);
+
+    uintn ksize = 2097152;
+    void* kernel = mapalloc(&ksize, AOZORA_MEMORY_KERNEL);
 
     print_map();
 
-   gl_print_string("void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)");
+    print_all_pci_devices();
 
-    while(1);
+    while (1);
 }
 
 //asm ("call getrip\n getrip: mov (%%esp), %0\n" : "=r" (reg));

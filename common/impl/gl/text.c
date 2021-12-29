@@ -2,15 +2,46 @@
 
 void gl_print_char(char c)
 {
-    uintn res_x = CURGLMODE->horizontal_resolution / 10;
-    uintn res_y = CURGLMODE->vertical_resolution / 12;
+    uintn res_x = GLMODE->horizontal_resolution / 10;
+    uintn res_y = GLMODE->vertical_resolution / 16;
     
-    if(c >= 0x20 && c < 0x7f)
+    switch(c)
     {
-        if(cur_x > res_x - 1)
-            cur_x = 0, cur_y++;
+        case '\t':
+            gl_print_string("    ");
+            return;
 
-        gl_draw_mask(cur_x++ * 10 + 1, cur_y * 14, 1, 10, 0xffffffff, letters[c - 32]);
+        case '\n':
+            cur_x = 0;
+            cur_y++;
+            return;
+
+        case '\b':
+            if(cur_x != 0)
+            {
+                cur_x--;
+                gl_print_char(' ');
+                cur_x--;
+            }
+            else if(cur_y != 0)
+            {
+                cur_x = res_x - 1;
+                cur_y--;
+                gl_print_char(' ');
+                cur_x = res_x - 1;
+            }
+            return;
+
+        case '\r':
+            cur_x = 0;
+            return;
+        
+        default:
+            if(cur_x > res_x - 1)
+                cur_x = 0, cur_y++;
+
+            gl_draw_mask(cur_x++ * 10, cur_y * 16 + 2, 1, 10, 0xffffffff, letters[c - 32]);
+            return;
     }
 }
 
@@ -22,7 +53,27 @@ void gl_print_string(char* string)
 
 void gl_print_num(uintn number, const byte radix, byte pad, char topad)
 {
+    if(number == 0)
+	{
+		if(pad) pad--;
+		while (pad--) gl_print_char(topad);
+		gl_print_char('0');
+		return;	
+	}
 
+	char buf[512];
+
+	int i = 0;
+	while(number)
+	{
+		unsigned char c = number % radix;
+		number /= radix;
+		buf[i++] = c < 10 ? c + '0' : c + '7';
+		if(pad) pad--;
+	}
+
+	while (pad--) gl_print_char(topad);
+	while (i--) gl_print_char(buf[i]);
 }
 
 void gl_set_cursor(uintn x, uintn y)
@@ -33,6 +84,6 @@ void gl_set_cursor(uintn x, uintn y)
 
 void gl_get_dimensions(uintn* x, uintn* y)
 {
-    *x = CURGLMODE->horizontal_resolution / 10;
-    *y = CURGLMODE->vertical_resolution / 12;
+    *x = GLMODE->horizontal_resolution / 10;
+    *y = GLMODE->vertical_resolution / 16;
 }

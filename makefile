@@ -22,9 +22,9 @@ build:
 	printf "OS: formating iso.fat32\n"
 #format iso
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mklabel gpt
-	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart EFI fat32 2048s 67583s 
+	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart EFI fat32 64s 65600s 
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal name 1 EFI-PART
-	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart primary 67584s 2547678s
+	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal mkpart primary 65601s 2547678s
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal name 2 AOZORA-OS-FS-PART
 	parted $(ENVDIR)/Aozora-OS.iso -s -a minimal toggle 1 boot
 #end
@@ -68,8 +68,6 @@ run: build
 		-device ide-hd,drive=harddisk,bootindex=1 \
 		-smp 1 -usb -vga std \
 		-serial vc \
-		-d int \
-		-D $(ENVDIR)/qemu-log.txt
 #===end run===
 
 #===make run===
@@ -91,8 +89,6 @@ shell: build
 		-device ide-hd,drive=harddisk,bootindex=9 \
 		-smp 1 -usb -vga std \
 		-serial vc \
-		-d int \
-		-D $(ENVDIR)/qemu-log.txt
 #===end shell===
 
 #===make debug===	

@@ -19,12 +19,12 @@ void gl_draw_rect(uintn x1, uintn y1, uintn x2, uintn y2, uint32 pixel, const dr
     {
     case FILL:
         for(int i = y1; i < y2; i++)
-            gl_draw_linear(x1 + i * CURGLMODE->pitch, x2 - x1, pixel);
+            gl_draw_linear(x1 + i * GLMODE->pitch, x2 - x1, pixel);
         return;
 
     case OUTLINE1:
-        gl_draw_linear(x1 + y1 * CURGLMODE->pitch, x2 - x1, pixel);
-        gl_draw_linear(x1 + (y2 - 1) * CURGLMODE->pitch, x2 - x1, pixel);
+        gl_draw_linear(x1 + y1 * GLMODE->pitch, x2 - x1, pixel);
+        gl_draw_linear(x1 + (y2 - 1) * GLMODE->pitch, x2 - x1, pixel);
         for(int i = y1; i < y2; i++)
         {
             gl_draw_pixel(x1, i, pixel);
@@ -40,12 +40,12 @@ void gl_draw_square(uintn x, uintn y, uintn size, uint32 pixel, const draw_mode 
     {
     case FILL:
         for(int i = y; i < y + size; i++)
-            gl_draw_linear(x + i * CURGLMODE->pitch, size, pixel);
+            gl_draw_linear(x + i * GLMODE->pitch, size, pixel);
         return;
 
     case OUTLINE1:
-        gl_draw_linear(x + y * CURGLMODE->pitch, size, pixel);
-        gl_draw_linear(x + (y + size - 1) * CURGLMODE->pitch, size, pixel);
+        gl_draw_linear(x + y * GLMODE->pitch, size, pixel);
+        gl_draw_linear(x + (y + size - 1) * GLMODE->pitch, size, pixel);
         for(int i = y; i < y + size; i++)
         {
             gl_draw_pixel(x, i, pixel);

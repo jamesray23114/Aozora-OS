@@ -22,15 +22,15 @@ void traslate_map(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) // 
         default:
             if(lasttype != AOZORA_MEMORY_RESERVED)
             {
-                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_RESERVED;
-                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
-                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].type =          AOZORA_MEMORY_RESERVED;
+                MEMMAP[i - j + 1].low_address =   currmem.PhysicalStart;
+                MEMMAP[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 lasttype = AOZORA_MEMORY_RESERVED;
             }
             else
             {
                 j++; 
-                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 asize--;
             }
             break;
@@ -45,15 +45,15 @@ void traslate_map(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) // 
 
             if(lasttype != AOZORA_MEMORY_FREE)
             {
-                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_FREE;
-                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
-                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].type =          AOZORA_MEMORY_FREE;
+                MEMMAP[i - j + 1].low_address =   currmem.PhysicalStart;
+                MEMMAP[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 lasttype = AOZORA_MEMORY_FREE;
             }
             else
             {
                 j++; 
-                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 asize--;
             }
             break;
@@ -65,15 +65,15 @@ void traslate_map(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) // 
 
             if(lasttype != AOZORA_MEMORY_PERSISTENT)
             {
-                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_PERSISTENT;
-                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
-                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].type =          AOZORA_MEMORY_PERSISTENT;
+                MEMMAP[i - j + 1].low_address =   currmem.PhysicalStart;
+                MEMMAP[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 lasttype = AOZORA_MEMORY_PERSISTENT;
             }
             else
             {
                 j++; 
-                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 asize--;
             }
             break;
@@ -82,15 +82,15 @@ void traslate_map(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) // 
         case EfiUnusableMemory:
             if(lasttype != AOZORA_MEMORY_BAD)
             {
-                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_BAD;
-                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
-                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].type =          AOZORA_MEMORY_BAD;
+                MEMMAP[i - j + 1].low_address =   currmem.PhysicalStart;
+                MEMMAP[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 lasttype = AOZORA_MEMORY_BAD;
             }
             else
             {
                 j++; 
-                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 asize--;
             }
             break;
@@ -102,14 +102,14 @@ void traslate_map(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) // 
 
             if(lasttype != AOZORA_MEMORY_BOOT)
             {
-                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_BOOT;
-                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
-                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].type =          AOZORA_MEMORY_BOOT;
+                MEMMAP[i - j + 1].low_address =   currmem.PhysicalStart;
+                MEMMAP[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 lasttype = AOZORA_MEMORY_BOOT;
             }
             else
             {
-                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 j++;
             }
             break;            
@@ -118,15 +118,15 @@ void traslate_map(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) // 
         case EfiACPIMemoryNVS:
             if(lasttype != AOZORA_MEMORY_NVS)
             {
-                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_NVS;
-                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
-                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].type =          AOZORA_MEMORY_NVS;
+                MEMMAP[i - j + 1].low_address =   currmem.PhysicalStart;
+                MEMMAP[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 lasttype = AOZORA_MEMORY_NVS;
             }
             else
             {
                 j++; 
-                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 asize--;
             }
             break; 
@@ -136,25 +136,41 @@ void traslate_map(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) // 
         case EfiMemoryMappedIOPortSpace:
             if(lasttype != AOZORA_MEMORY_IO)
             {
-                aos_memmap[i - j + 1].type =          AOZORA_MEMORY_IO;
-                aos_memmap[i - j + 1].low_address =   currmem.PhysicalStart;
-                aos_memmap[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].type =          AOZORA_MEMORY_IO;
+                MEMMAP[i - j + 1].low_address =   currmem.PhysicalStart;
+                MEMMAP[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 lasttype = AOZORA_MEMORY_IO;
             }
             else
             {
                 j++; 
-                aos_memmap[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+                MEMMAP[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
                 asize--;
             }
             break;        
         }   
     }    
 
+    aozora_memory swap;
+    last = 0;
 
-    aos_memmap[0].type =                AOZORA_MEMORY_INVALID;
-    aos_memmap[0].low_address =         asize;
-    aos_memmap[0].high_address =        maxsize;
+    for(int i = 1; i < asize + 1; i++)
+    {
+        for(int j = i; j < asize + 1; j++)
+        {
+            if(MEMMAP[j].low_address < MEMMAP[i].high_address)
+            {
+                swap = MEMMAP[i];
+                MEMMAP[i] = MEMMAP[j];
+                MEMMAP[j] = swap;
+            }
+        }
+    };
+
+
+    MEMMAP[0].type =                AOZORA_MEMORY_INVALID;
+    MEMMAP[0].low_address =         asize;
+    MEMMAP[0].high_address =        maxsize;
 }
 
 aozora_status fetch_memory_map(EFI_HANDLE mainhandle) 
@@ -179,7 +195,7 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
         set_resolution(gop, 1024, 768 );
         set_resolution(gop, 1280, 1024);
         set_resolution(gop, 1280, 720 );
-        //set_resolution(gop, 1920, 1080); 
+        set_resolution(gop, 1920, 1080); 
 
         gm.format =                 gop->Mode->Info->PixelFormat;
         gm.horizontal_resolution =  gop->Mode->Info->HorizontalResolution;
@@ -197,8 +213,6 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
 
     BTSV->GetMemoryMap(&size, memmap, &key, &descsize, &ver);
     BTSV->ExitBootServices(mainhandle, key);
-
-    //set_resolution(gop, 1920, 1080); 
 
     //for(uintn i = 0; i < size / descsize; i++)
     //{
@@ -219,22 +233,18 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
 
     //fetch_graphics_map(gop);
 
-    if(aos_memmap[1].type != AOZORA_MEMORY_FREE)
+    if(MEMMAP[1].type != AOZORA_MEMORY_FREE)
         goto errornf;
-    if(aos_memmap[1].high_address < 0x250000)
+    if(MEMMAP[1].high_address < 0x350000)
         goto errornf;
 
-    aozora_memory etcmem = {AOZORA_MEMORY_KERNEL, 0, 0x4000};
-    aozora_memory mapmem = {AOZORA_MEMORY_MAP, 0x4000, 0x34000};
-    aozora_memory knlmem = {AOZORA_MEMORY_KERNEL, 0x34000, 0x234000};
-    aozora_memory stack  = {AOZORA_MEMORY_KERNEL, 0x234000, 0x240000};
-    aozora_memory etcmap = {AOZORA_MEMORY_MAP, 0x240000, 0x250000};
+    aozora_memory etcmem = {AOZORA_MEMORY_KDATA, 0, 0x4000};
+    aozora_memory mapmem = {AOZORA_MEMORY_MAP, 0x4000, 0x33760};
+    aozora_memory datmem = {AOZORA_MEMORY_KDATA, 0x33760, 0x35000};
     aozora_memory gopmem = {AOZORA_MEMORY_GOP, gopbase, gopbase + gopsize};
     addmap(etcmem);
-    addmap(mapmem); 
-    addmap(knlmem);
-    addmap(stack);
-    addmap(etcmap);
+    addmap(mapmem);
+    addmap(datmem);  
     addmap(gopmem);
     
     //print_map();
@@ -242,7 +252,7 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
     return 0;
 
 errornf:
-    print_string("error allocating aozora-os memory, memory at location 0 - 0x250000 is not free\n\r");
+    gl_print_string("error allocating aozora-os memory, memory at location 0 - 0x350000 is not free\n\r");
+    print_map();
     return 1;
-
 }

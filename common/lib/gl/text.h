@@ -12,7 +12,7 @@ void    gl_print_string(char* string);
 void    gl_print_num(uintn number, const byte radix, byte pad, char topad);
 void    gl_set_cursor(uintn x, uintn y);
 
-static const byte letters[95][10] = // utf8 ofset by +32
+static const byte letters[95][10] = // acsii ofset by +32
 {
     { //
         0b00000000,        

@@ -10,23 +10,23 @@ void splitmap(uintn at, uintn size, const byte loc)
     if(loc == 0)
     {
         size += 2;
-        aos_memmap[0].low_address = size;
+        MEMMAP[0].low_address = size;
         for( ; size > at; size--)
-            aos_memmap[size] = aos_memmap[size - 2];
+            MEMMAP[size] = MEMMAP[size - 2];
     }
     else if(loc == 1)
     {
         size += 1;
-        aos_memmap[0].low_address = size;
+        MEMMAP[0].low_address = size;
         for( ; size > at; size--)
-            aos_memmap[size] = aos_memmap[size - 1];
+            MEMMAP[size] = MEMMAP[size - 1];
     }
     else if(loc == 2)
     {
         size += 1;
-        aos_memmap[0].low_address = size;
+        MEMMAP[0].low_address = size;
         for( ; size > at - 1; size--)
-            aos_memmap[size] = aos_memmap[size - 1];
+            MEMMAP[size] = MEMMAP[size - 1];
     }
 }
 
@@ -37,67 +37,67 @@ void mergemap(uintn at, uintn size, const byte loc)
     if(loc == 0)
     {
         size -= 2;
-        aos_memmap[0].low_address = size;
+        MEMMAP[0].low_address = size;
         for( ; size + 1 > at; at++)
-            aos_memmap[at] = aos_memmap[at + 2];
+            MEMMAP[at] = MEMMAP[at + 2];
     }
     else if(loc == 1)
     {
         size -= 1;
-        aos_memmap[0].low_address = size;
+        MEMMAP[0].low_address = size;
         for( ; size + 1 > at; at++)
-            aos_memmap[at] = aos_memmap[at + 1];
+            MEMMAP[at] = MEMMAP[at + 1];
     }
 }
 
 void addmap(aozora_memory memory) // does no check to ensure memory can fit in memmap
 {
-    uintn size = aos_memmap[0].low_address;
+    uintn size = MEMMAP[0].low_address;
 
     for(int i = 1; i <= size + 1; i++)
     {
-        if(memory.low_address <= aos_memmap[i].low_address)
+        if(memory.low_address <= MEMMAP[i].low_address)
         {
-            if(memory.low_address == aos_memmap[i].low_address && memory.high_address == aos_memmap[i].high_address )
+            if(memory.low_address == MEMMAP[i].low_address && memory.high_address == MEMMAP[i].high_address )
             {
-                 aos_memmap[i] = memory;
+                 MEMMAP[i] = memory;
                  return;
             }
-            else if(memory.low_address == aos_memmap[i].low_address)
+            else if(memory.low_address == MEMMAP[i].low_address)
             {
                 splitmap(i, size, 1);
-                aos_memmap[i] = memory;
-                aos_memmap[i + 1].low_address = memory.high_address;
+                MEMMAP[i] = memory;
+                MEMMAP[i + 1].low_address = memory.high_address;
                 return;
             }
-            else if(memory.high_address == aos_memmap[i - 1].high_address)
+            else if(memory.high_address == MEMMAP[i - 1].high_address)
             {
                 splitmap(i, size, 2);
-                aos_memmap[i] = memory;
-                aos_memmap[i - 1].high_address = memory.low_address;
+                MEMMAP[i] = memory;
+                MEMMAP[i - 1].high_address = memory.low_address;
                 return;
             }
-            else if(aos_memmap[i - 1].type == AOZORA_MEMORY_FREE)
+            else if(MEMMAP[i - 1].type == AOZORA_MEMORY_FREE)
             {
                 splitmap(i, size, 0);
-                aos_memmap[i - 1].high_address = memory.low_address;
-                aos_memmap[i] = memory;
-                aos_memmap[i + 1].type =            AOZORA_MEMORY_FREE;
-                aos_memmap[i + 1].low_address =     memory.high_address;
-                aos_memmap[i + 1].high_address =    aos_memmap[i + 2].low_address;
+                MEMMAP[i - 1].high_address = memory.low_address;
+                MEMMAP[i] = memory;
+                MEMMAP[i + 1].type =            AOZORA_MEMORY_FREE;
+                MEMMAP[i + 1].low_address =     memory.high_address;
+                MEMMAP[i + 1].high_address =    MEMMAP[i + 2].low_address;
                 return;
             }
             else
             {
                 splitmap(i, size, 2);
-                aos_memmap[i] = memory;
+                MEMMAP[i] = memory;
                 return;
             }
         } 
     }
     size++;
-    aos_memmap[size] = memory;
-    aos_memmap[0].low_address = size;
+    MEMMAP[size] = memory;
+    MEMMAP[0].low_address = size;
 
 }
 
@@ -114,9 +114,10 @@ inline bool validatetype(aozora_memory_type type) // returns true for types that
     case AOZORA_MEMORY_PERSISTENT:
     case AOZORA_MEMORY_GOP:
     case AOZORA_MEMORY_MAP:
-    case AOZORA_MEMORY_KERNEL:
         return true;
 
+    case AOZORA_MEMORY_KDATA:
+    case AOZORA_MEMORY_KERNEL:
     case AOZORA_MEMORY_CODE:
     case AOZORA_MEMORY_DATA:
     case AOZORA_MEMORY_SHARED:
@@ -130,8 +131,8 @@ inline bool validatetype(aozora_memory_type type) // returns true for types that
 
 void* mapalloc(uintn* size, aozora_memory_type type)
 {
-    uintn mapsize = aos_memmap[0].low_address;
-    uintn maxsize = aos_memmap[0].high_address;
+    uintn mapsize = MEMMAP[0].low_address;
+    uintn maxsize = MEMMAP[0].high_address;
 
     void* ptr = 0;
 
@@ -140,21 +141,21 @@ void* mapalloc(uintn* size, aozora_memory_type type)
 
     for(int i = 1; i <= mapsize + 1; i++)
     {
-        if(aos_memmap[i].high_address - aos_memmap[i].low_address >= *size && aos_memmap[i].type == AOZORA_MEMORY_FREE)
+        if(MEMMAP[i].high_address - MEMMAP[i].low_address >= *size && MEMMAP[i].type == AOZORA_MEMORY_FREE)
             {
                 aozora_memory t;
 
-                ptr = (void*) aos_memmap[i].low_address;
-                t.low_address = aos_memmap[i].low_address;
+                ptr = (void*) MEMMAP[i].low_address;
+                t.low_address = MEMMAP[i].low_address;
                 t.type = type;
                 
-                if(aos_memmap[i].high_address - aos_memmap[i].low_address - 0x100000 <= *size || aos_memmap[i].high_address - aos_memmap[i].low_address - 0x100000 >= __INT64_MAX__)   
+                if(MEMMAP[i].high_address - MEMMAP[i].low_address - 0x100000 <= *size || MEMMAP[i].high_address - MEMMAP[i].low_address - 0x100000 >= __INT64_MAX__)   
                 {             
-                    t.high_address = aos_memmap[i].high_address;
-                    *size = aos_memmap[i].high_address - aos_memmap[i].low_address;
+                    t.high_address = MEMMAP[i].high_address;
+                    *size = MEMMAP[i].high_address - MEMMAP[i].low_address;
                 }
                 else
-                    t.high_address = aos_memmap[i].low_address + *size;
+                    t.high_address = MEMMAP[i].low_address + *size;
 
                 addmap(t);
                 return ptr;
@@ -165,37 +166,37 @@ void* mapalloc(uintn* size, aozora_memory_type type)
 
 void mapfree(void* ptr)
 {
-    uintn mapsize = aos_memmap[0].low_address;
-    uintn maxsize = aos_memmap[0].high_address;
+    uintn mapsize = MEMMAP[0].low_address;
+    uintn maxsize = MEMMAP[0].high_address;
 
     if((uintn) ptr == 0 || (uintn) ptr > maxsize)
         return;
 
     for(int i = 1; i < mapsize; i++)
     {
-        if((uintn) ptr == aos_memmap[i].low_address)
+        if((uintn) ptr == MEMMAP[i].low_address)
         {
-            if(validatetype(aos_memmap[i].type))
+            if(validatetype(MEMMAP[i].type))
                 return;
 
-            if(aos_memmap[i - 1].type == AOZORA_MEMORY_FREE && aos_memmap[i + 1].type == AOZORA_MEMORY_FREE)
+            if(MEMMAP[i - 1].type == AOZORA_MEMORY_FREE && MEMMAP[i + 1].type == AOZORA_MEMORY_FREE)
             {
                 mergemap(i, mapsize, 0);
-                aos_memmap[i - 1].high_address = aos_memmap[i].low_address;
+                MEMMAP[i - 1].high_address = MEMMAP[i].low_address;
             }
-            else if(aos_memmap[i - 1].type == AOZORA_MEMORY_FREE)
+            else if(MEMMAP[i - 1].type == AOZORA_MEMORY_FREE)
             {
                 mergemap(i, mapsize, 1);
-                aos_memmap[i - 1].high_address = aos_memmap[i].low_address;
+                MEMMAP[i - 1].high_address = MEMMAP[i].low_address;
             }
-            else if(aos_memmap[i + 1].type == AOZORA_MEMORY_FREE)
+            else if(MEMMAP[i + 1].type == AOZORA_MEMORY_FREE)
             {
                 mergemap(i, mapsize, 1);
-                aos_memmap[i].low_address = aos_memmap[i - 1].high_address;
+                MEMMAP[i].low_address = MEMMAP[i - 1].high_address;
             }
             else    
             {      
-                aos_memmap[i].type = AOZORA_MEMORY_FREE;
+                MEMMAP[i].type = AOZORA_MEMORY_FREE;
             }
         }
     }

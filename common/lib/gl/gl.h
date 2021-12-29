@@ -8,7 +8,7 @@
 #define RGB 0
 #define BGR 1
 
-#define CURGLMODE gl_mode
+#define GLMODE gl_mode
 
 #define D(COLR) COLR, COLR
 #define T(COLR) COLR, COLR, COLR
@@ -105,12 +105,12 @@ typedef struct bitmask_pixel_s
     uint32 none;
 } bitmask_pixel;
 
-static graphics_mode* gl_mode = (graphics_mode*) 0x24000; //THIS CAN CAUSE ISSUES, PLEASE REVIEW IN FUTURE
+static graphics_mode* gl_mode = (graphics_mode*) 0x33760; //THIS CAN CAUSE ISSUES, PLEASE REVIEW IN FUTURE
 
 
 static inline uint32 gl_pixel(byte red, byte blue, byte green)
 {   
-    switch (CURGLMODE->format)
+    switch (GLMODE->format)
     {
     case RGB_8_BIT:
         rgb_pixel rgb = {.red = red, .blue = blue, .green = green};
@@ -126,10 +126,10 @@ static inline uint32 gl_pixel(byte red, byte blue, byte green)
 static inline void gl_draw_linear(uintn start, uintn count, uint32 pixel) // does not account for pitch
 {
     for(int i = 0; i < count; i++)
-        CURGLMODE->location[i + start] = pixel;
+        GLMODE->location[i + start] = pixel;
 }
 
 static inline void gl_draw_pixel(uintn x, uintn y, uint32 pixel)
 {
-    CURGLMODE->location[y * CURGLMODE->pitch + x] = pixel;
+    GLMODE->location[y * GLMODE->pitch + x] = pixel;
 }

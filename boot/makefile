@@ -29,5 +29,5 @@ build: $(BOOT_OBJ_FILES)
 	mmd -i $(ISODIR)/fat.img ::/EFI/BOOT
 	mcopy -i $(ISODIR)/fat.img $(TEMPDIR)/BOOTX64.EFI ::/EFI/BOOT 
 
-	dd if=$(ISODIR)/fat.img of=$(ENVDIR)/Aozora-OS.iso bs=512 count=65565 seek=2048 conv=notrunc status=none
+	dd if=$(ISODIR)/fat.img of=$(ENVDIR)/Aozora-OS.iso bs=512 count=65565 seek=64 conv=notrunc status=none
 #end

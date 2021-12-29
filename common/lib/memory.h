@@ -2,6 +2,8 @@
 
 #include <lib/typedef.h>
 
+#define MEMMAP aos_memmap
+
 typedef enum aozora_memory_type_e aozora_memory_type;
 typedef struct aozora_memory_s aozora_memory;
 
@@ -27,6 +29,7 @@ typedef enum aozora_memory_type_e
 
     AOZORA_MEMORY_MAP,
     AOZORA_MEMORY_KERNEL,
+    AOZORA_MEMORY_KDATA,
     AOZORA_MEMORY_CODE,
     AOZORA_MEMORY_DATA,
     AOZORA_MEMORY_SHARED,
