@@ -107,7 +107,6 @@ typedef struct bitmask_pixel_s
 
 static graphics_mode* gl_mode = (graphics_mode*) 0x33760; //THIS CAN CAUSE ISSUES, PLEASE REVIEW IN FUTURE
 
-
 static inline uint32 gl_pixel(byte red, byte blue, byte green)
 {   
     switch (GLMODE->format)

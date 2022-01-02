@@ -167,6 +167,12 @@ void traslate_map(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) // 
         }
     };
 
+    for(int i = 1; i < asize + 1; i++)
+    {
+        if(MEMMAP[i].low_address < MEMMAP[i - 1].high_address && MEMMAP[i].type == AOZORA_MEMORY_FREE)
+            MEMMAP[i].low_address = MEMMAP[i - 1].high_address;
+    };
+
 
     MEMMAP[0].type =                AOZORA_MEMORY_INVALID;
     MEMMAP[0].low_address =         asize;
@@ -235,7 +241,7 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
 
     if(MEMMAP[1].type != AOZORA_MEMORY_FREE)
         goto errornf;
-    if(MEMMAP[1].high_address < 0x350000)
+    if(MEMMAP[1].high_address < 0x35000)
         goto errornf;
 
     aozora_memory etcmem = {AOZORA_MEMORY_KDATA, 0, 0x4000};
@@ -249,10 +255,12 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
     
     //print_map();
 
+    pci_add_memmap();
+
     return 0;
 
 errornf:
-    gl_print_string("error allocating aozora-os memory, memory at location 0 - 0x350000 is not free\n\r");
+    gl_print_string("error allocating aozora-os memory, memory at location 0 - 0x35000 is not free\n\r");
     print_map();
     return 1;
 }

@@ -26,10 +26,11 @@ void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
     uintn ksize = 2097152;
     void* kernel = mapalloc(&ksize, AOZORA_MEMORY_KERNEL);
 
-    print_map();
+    //print_map();
 
-    print_all_pci_devices();
-
+    //print_all_pci_devices();
+    //print_all_pci_devices_long();
+    
     while (1);
 }
 

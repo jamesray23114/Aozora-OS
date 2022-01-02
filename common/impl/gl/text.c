@@ -1,10 +1,16 @@
 #include <lib/gl/text.h>
 
+#define CHARHEIGHT 12
+#define CHARWIDTH 10
+
 void gl_print_char(char c)
 {
-    uintn res_x = GLMODE->horizontal_resolution / 10;
-    uintn res_y = GLMODE->vertical_resolution / 16;
-    
+    uintn res_x = GLMODE->horizontal_resolution / CHARWIDTH;
+    uintn res_y = GLMODE->vertical_resolution / CHARHEIGHT;
+
+    print_num(res_x, 10, 0, 0);
+    print_string("\n\r");
+
     switch(c)
     {
         case '\t':
@@ -19,7 +25,7 @@ void gl_print_char(char c)
         case '\b':
             if(cur_x != 0)
             {
-                cur_x--;
+                cur_x--;          
                 gl_print_char(' ');
                 cur_x--;
             }
@@ -40,7 +46,7 @@ void gl_print_char(char c)
             if(cur_x > res_x - 1)
                 cur_x = 0, cur_y++;
 
-            gl_draw_mask(cur_x++ * 10, cur_y * 16 + 2, 1, 10, 0xffffffff, letters[c - 32]);
+            gl_draw_mask(cur_x++ * CHARWIDTH, cur_y * CHARHEIGHT + 2, 1, 10, 0xffffffff, letters[c - 32]);
             return;
     }
 }
@@ -61,7 +67,7 @@ void gl_print_num(uintn number, const byte radix, byte pad, char topad)
 		return;	
 	}
 
-	char buf[512];
+	char buf[64];
 
 	int i = 0;
 	while(number)
@@ -84,6 +90,6 @@ void gl_set_cursor(uintn x, uintn y)
 
 void gl_get_dimensions(uintn* x, uintn* y)
 {
-    *x = GLMODE->horizontal_resolution / 10;
-    *y = GLMODE->vertical_resolution / 16;
+    *x = GLMODE->horizontal_resolution / CHARWIDTH;
+    *y = GLMODE->vertical_resolution / CHARHEIGHT;
 }

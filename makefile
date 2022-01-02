@@ -5,10 +5,10 @@ ENVDIR := _env
 
 #===make build=== 
 .PHONY: build
-build:
+build: 
 	printf "STARTING BUILD/AOZORA-OS: (OS: )\n"
 
-	printf "OS: making common files\n"
+	printf "OS: making common files and directories\n"
 #create needed files
 	mkdir -p $(TEMPDIR)/iso $(ENVDIR) _build
 	rm -f $(TEMPDIR)/iso/fat.img $(ENVDIR)/Aozora-OS.iso 
@@ -16,7 +16,7 @@ build:
 
 	truncate -s 32m  	$(TEMPDIR)/iso/fat.img
 	truncate -s 1244m  	$(ENVDIR)/Aozora-OS.iso
-	truncate -s 10G   	 $(ENVDIR)/harddrive.hhd
+	truncate -s 10G   	$(ENVDIR)/harddrive.hhd
 #end
 
 	printf "OS: formating iso.fat32\n"
