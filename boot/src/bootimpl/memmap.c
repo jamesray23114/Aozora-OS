@@ -202,7 +202,7 @@ aozora_status fetch_memory_map(EFI_HANDLE mainhandle)
         set_resolution(gop, 1280, 1024);
         set_resolution(gop, 1280, 720 );
         set_resolution(gop, 1920, 1080); 
-
+        
         gm.format =                 gop->Mode->Info->PixelFormat;
         gm.horizontal_resolution =  gop->Mode->Info->HorizontalResolution;
         gm.vertical_resolution =    gop->Mode->Info->VerticalResolution;

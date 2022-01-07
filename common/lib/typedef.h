@@ -9,6 +9,7 @@
 #define nullptr (void*) 0
 
 typedef _U char         byte;
+typedef _U int          uint;
 
 typedef    char         int8;
 typedef    short        int16;

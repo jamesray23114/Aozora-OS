@@ -201,3 +201,74 @@ void mapfree(void* ptr)
         }
     }
 }
+
+void printmap(void* mapptr)
+{
+    uintn size = MEMMAP[0].low_address;
+
+    for(int i = 1; i < size; i++)
+        if(MEMMAP[i].low_address == (uintn) mapptr)
+            {
+                size = MEMMAP[i].high_address - MEMMAP[i].low_address;
+                printmem(mapptr, size);
+                return;
+            }
+
+    gl_print_string("map at ");
+    gl_print_num((uintn) mapptr, 16, 0, 0);
+    gl_print_string(" was not found.\n\r");
+}
+
+inline void printblockhex(byte* ind, int size)
+{
+    for(int i = 0; i < size; i++)
+    {   
+        gl_print_char(' ');
+        if(i % 4 == 0 && i)
+            gl_print_char(' ');
+
+        gl_print_num(ind[i], 16, 2, '0');
+    }
+}
+
+inline void printblockchar(byte* ind, int size)
+{
+    for(int i = 0; i < size; i++)
+    {   
+        byte ch = ind[i];
+
+        if(ch < 0x20 || ch > 0x7f)
+            gl_print_char('.');
+        else         
+            gl_print_char(ch);
+    }
+} 
+
+void printmem(void* ptr, uintn count)
+{
+    if(count > 0xfffe)
+        count = 0xfffe;
+
+    uint bsize = GLMODE->horizontal_resolution / CHARWIDTH; // number of bytes to print per line, math is done to ensure values will not go onto the next line regardless of resolution
+    bsize /= 5;
+    bsize -= bsize % 4; 
+
+    uint blockcount = count / bsize; // number of lines to print
+
+    if(blockcount % bsize != 0)
+        blockcount += 1;
+
+    for(int i = 0; i < blockcount; i++)
+    {
+        gl_print_num(i * bsize, 16, 4, '0');
+        gl_print_string(" - ");
+        gl_print_num((i + 1) * bsize, 16, 4, '0');
+        gl_print_string(":");
+        
+        printblockhex(ptr + i * bsize, bsize);
+        gl_print_string(" |");
+        printblockchar(ptr + i * bsize, bsize);
+
+        gl_print_string("\n\r");
+    }
+}

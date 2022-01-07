@@ -1,14 +1,10 @@
 #include <lib/gl/text.h>
 
-#define CHARHEIGHT 12
-#define CHARWIDTH 10
-
 void gl_print_char(char c)
 {
     uintn res_x = GLMODE->horizontal_resolution / CHARWIDTH;
     uintn res_y = GLMODE->vertical_resolution / CHARHEIGHT;
 
-    print_num(res_x, 10, 0, 0);
     print_string("\n\r");
 
     switch(c)

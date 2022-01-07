@@ -7,10 +7,13 @@
 typedef enum aozora_memory_type_e aozora_memory_type;
 typedef struct aozora_memory_s aozora_memory;
 
-void splitmap(uintn at, uintn size, const byte loc);
-void addmap(aozora_memory memory); // does no check to ensure memory can fit in memmap
-void* mapalloc(uintn* size, aozora_memory_type type);
-void mapfree(void* ptr);
+void    splitmap(uintn at, uintn size, const byte loc);
+void    addmap(aozora_memory memory); // does no check to ensure memory can fit in memmap
+void*   mapalloc(uintn* size, aozora_memory_type type);
+void    mapfree(void* ptr);
+
+void    printmap(void* mapptr);
+void    printmem(void* ptr, uintn count);
 
 typedef enum aozora_memory_type_e
 {
@@ -44,4 +47,4 @@ typedef struct aozora_memory_s
     uintn               high_address;    
 } aozora_memory; 
 
-static aozora_memory* aos_memmap = (aozora_memory*) 0x8000; //THIS CAN CAUSE ISSUES, PLEASE REVIEW IN FUTURE
+static aozora_memory* aos_memmap = (aozora_memory*) 0x8000; // TODO: THIS CAN CAUSE ISSUES, PLEASE REVIEW IN FUTURE

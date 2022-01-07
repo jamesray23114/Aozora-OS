@@ -1,0 +1,39 @@
+
+going fowards:
+[ ] setup memory tables and interrupt tables
+[ ] keyboard io
+[x] disk io
+[ ] linux jfs tool
+[ ] kernel loader / exit boot loader
+[ ] cstdlib
+[ ] add networking
+[ ] interact with acpi 
+[ ] running executables / tasks
+[ ] multithreading and processes
+[ ] porting gcc / own compiler
+[ ] 
+[ ]
+[ ]
+[ ]
+
+refactoring: jan 2021
+[ ] refactering and optimization
+[ ] move small / common c files to headers file
+[ ] remove depedencies to boot in common lib
+[ ] improve consistency in code style
+    - variables are all lowercase with no _, variables should be small
+    - const are all uppercase
+    - macros should be all uperecase
+    - function like macros should start with fn_
+    - global variables should all be const, otherwise mark variable with global_
+    - functions should be in camalCase with the library it belongs to being in front i.e. gl_myFunction()
+[ ] inpliment more helper function
+[ ]
+
+OS checklist:
+[ ] get and set time
+[ ] interaction with text file
+[ ] calculator
+[ ] power computer off and reboot
+[ ] load and display image
+[ ] make vt console and window manager

@@ -25,24 +25,7 @@ void    pci_add_memmap();
 void    print_single_pci_device(pci_device device);
 void    print_single_pci_device_long(pci_device device);
 
-inline uint32 pci_read(uint32 bus, uint32 device, uint32 func, uint8 offset)
-{
-    uint32 adr, tmp;
-    adr =   (bus << 16)     | 
-            (device << 11)  |
-            (func << 8)     | 
-            (offset & 0xFC) | 
-            0x80000000;
-   
-    outl(0xCF8, adr);
-
-    return inl(0xCFC);
-}
-
-inline void pci_write(uint8 bus, uint8 device, uint8 func, uint8 offset, uint32 data) 
-{
-
-};
+pci_device get_device(uintn class, uintn subclass);
 
 typedef struct pci_device_s
 {
@@ -62,5 +45,59 @@ typedef struct pci_device_s
     byte bist;
 
 } pci_device;
+
+inline uint32 pci_read(uint32 bus, uint32 device, uint32 func, uint8 offset)
+{
+    uint32 adr;
+    adr =   (bus << 16)     | 
+            (device << 11)  |
+            (func << 8)     | 
+            (offset & 0xFC) | 
+            0x80000000;
+   
+    outl(0xCF8, adr);
+
+    return inl(0xCFC);
+}
+
+inline void pci_write(uint8 bus, uint8 device, uint8 func, uint8 offset, uint32 data) 
+{
+    uint32 adr;
+    adr =   (bus << 16)     | 
+            (device << 11)  |
+            (func << 8)     | 
+            (offset & 0xFC) | 
+            0x80000000;
+
+    outl(0xCFC, data);
+    outl(0xCF8, adr);
+};
+
+inline uint32 device_read(pci_device dev, uint8 offset)
+{
+    uint32 adr;
+    adr =   (dev.bus << 16)     | 
+            (dev.device << 11)  |
+            (dev.function << 8) | 
+            (offset & 0xFC)     | 
+            0x80000000;
+   
+    outl(0xCF8, adr);
+
+    return inl(0xCFC);
+}
+
+inline void device_write(pci_device dev, uint8 offset, uint32 data) 
+{
+    uint32 adr;
+    adr =   (dev.bus << 16)     | 
+            (dev.device << 11)  |
+            (dev.function << 8) | 
+            (offset & 0xFC)     | 
+            0x80000000;
+
+    outl(0xCFC, data);
+    outl(0xCF8, adr);
+};
 
 static pci_device* pci_memmap = (pci_device*) 0x14480;

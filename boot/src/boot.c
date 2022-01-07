@@ -5,9 +5,11 @@
 #include <bootlib/gop.h>
 #include <bootlib/io.h>
 
+#include <lib/typedef.h>
 #include <lib/gl/gl.h>
 #include <lib/gl/text.h>
-#include <lib/typedef.h>
+#include <lib/pci/disk/ide.h>
+#include <lib/pci/pci.h>
 
 EFI_SYSTEM_TABLE*   ST;
 EFI_BOOT_SERVICES*  BS;
@@ -29,8 +31,13 @@ void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
     //print_map();
 
     //print_all_pci_devices();
-    //print_all_pci_devices_long();
-    
+
+    if(ide_init())
+    {
+        byte buffer[2048] = {0};
+        ide_read_sectors(0, 0, 2, buffer);
+        printmem(buffer, 2048);
+    }
     while (1);
 }
 

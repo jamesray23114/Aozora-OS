@@ -2,6 +2,9 @@
 
 #include <lib/gl/gl.h>
 
+#define CHARHEIGHT  12
+#define CHARWIDTH   10
+
 static int cur_x = 0;
 static int cur_y = 0;
 

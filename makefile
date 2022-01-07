@@ -46,7 +46,7 @@ build:
 .PHONY: clean
 clean:
 	rm -r $(TEMPDIR) && mkdir $(TEMPDIR) && \
-	rm -r $(ENVDIR) && mkdir $(ENVDIR)
+	rm    $(ENVDIR)/Aozora-OS.iso
 #===end clean===
 
 #===make run===

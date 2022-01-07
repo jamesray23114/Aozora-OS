@@ -35,7 +35,7 @@ void print_single_pci_device_long(pci_device device)
     gl_print_string("\n\r");
 
     gl_print_string(" -> interface: ");
-    gl_print_num(device.intr, 10, 0, 0);
+    gl_print_num(device.intr, 16, 0, 0);
     gl_print_string(" / header: ");
     gl_print_num(device.header_ver, 10, 0, 0);
     gl_print_string("\n\r");
@@ -151,4 +151,16 @@ void pci_add_memmap()
             }
     
     PCIMAP[0].deviceid = count;
+}
+
+pci_device get_device(uintn class, uintn subclass) // returns a device with a header version of 100 if no device is found
+{
+    uintn size = PCIMAP[0].deviceid;
+
+    for(int i = 1; i < size + 1; i++)
+        if(PCIMAP[i].class == class && PCIMAP[i].subclass == subclass)
+            return PCIMAP[i];
+
+    pci_device na = {.header_ver = 100};
+    return na; 
 }
