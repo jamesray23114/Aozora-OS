@@ -1,7 +1,7 @@
 #pragma once
 
 #include "efidef.h"
-#include <lib/typedef.h>
+#include <typedef.h>
 
 struct _SIMPLE_TEXT_OUTPUT_INTERFACE;
 struct _SIMPLE_INPUT_INTERFACE;

@@ -3,7 +3,7 @@
 #include <efi/efi.h>
 
 #include <lib/memory.h>
-#include <lib/typedef.h>
+#include <typedef.h>
 
 #include <bootlib/gop.h>
 #include <bootlib/print.h>

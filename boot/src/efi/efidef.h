@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/typedef.h>
+#include <typedef.h>
 
 typedef uintn           EFI_STATUS;
 typedef uint64          EFI_LBA;

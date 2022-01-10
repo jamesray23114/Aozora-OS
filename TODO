@@ -1,13 +1,14 @@
 
 going fowards:
-[ ] setup memory tables and interrupt tables
-[ ] keyboard io
+[ ] setup memory tables 
+[ ] setup interrupts
 [x] disk io
-[ ] linux jfs tool
+[ ] interact with acpi 
+[ ] keyboard io
+[ ] impliment file system + linux jfs tool
 [ ] kernel loader / exit boot loader
 [ ] cstdlib
 [ ] add networking
-[ ] interact with acpi 
 [ ] running executables / tasks
 [ ] multithreading and processes
 [ ] porting gcc / own compiler
@@ -27,7 +28,7 @@ refactoring: jan 2021
     - function like macros should start with fn_
     - global variables should all be const, otherwise mark variable with global_
     - functions should be in camalCase with the library it belongs to being in front i.e. gl_myFunction()
-[ ] inpliment more helper function
+[x] inpliment more helper functions
 [ ]
 
 OS checklist:

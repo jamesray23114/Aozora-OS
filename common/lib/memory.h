@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/typedef.h>
+#include <typedef.h>
 
 #define MEMMAP aos_memmap
 

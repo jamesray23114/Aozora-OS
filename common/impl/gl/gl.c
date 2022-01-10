@@ -1,5 +1,7 @@
 #include <lib/gl/gl.h>
 
+
+// TODO: fix lines that go from (-, +) <-> (+, -) ie 250, 700, 600, 340
 void gl_draw_line(uintn x1, uintn y1, uintn x2, uintn y2, uint32 pixel)
 {
     int distx = x1 - x2;
@@ -9,8 +11,11 @@ void gl_draw_line(uintn x1, uintn y1, uintn x2, uintn y2, uint32 pixel)
     float xrat = abs(distx) / (float)size;
     float yrat = abs(disty) / (float)size;
 
+    int xoff = x1 < x2 ? x1 : x2;
+    int yoff = y1 < y2 ? y1 : y2;
+
     for(int i = 0; i < size; i++)
-        gl_draw_pixel(i * xrat, i * yrat, pixel);
+        gl_draw_pixel(i * xrat + xoff, i * yrat + yoff, pixel);
 }
 
 void gl_draw_rect(uintn x1, uintn y1, uintn x2, uintn y2, uint32 pixel, const draw_mode mode)
@@ -69,3 +74,8 @@ void gl_draw_mask(uintn x, uintn y, uintn sizex, uintn sizey, uint32 pixel, cons
             for(int k = 0; k < 8; k++)
                 mask[i * sizex + j] & (0b10000000 >> k) ? gl_draw_pixel((x + j * 8) + k, y + i, pixel) : gl_draw_pixel((x + j * 8) + k, y + i, 0);
 }
+
+// B B G G
+// B G G B
+// G G B B
+// G B B G

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/typedef.h>
+#include <typedef.h>
 #include <lib/pci/pci.h>
 #include <lib/gl/gl.h>
 

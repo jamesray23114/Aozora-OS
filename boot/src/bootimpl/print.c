@@ -31,7 +31,7 @@ void print_string(char* string)
 	while(string[i]) write_com1(string[i++]);
 }
 
-inline char* aozora_memory_type_to_string(EFI_MEMORY_TYPE type)
+static inline char* aozora_memory_type_to_string(EFI_MEMORY_TYPE type)
 {
 	switch (type)
 	{

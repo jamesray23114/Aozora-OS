@@ -5,11 +5,15 @@
 #include <bootlib/gop.h>
 #include <bootlib/io.h>
 
-#include <lib/typedef.h>
+#include <typedef.h>
+#include <lib/cpu.h>
 #include <lib/gl/gl.h>
 #include <lib/gl/text.h>
 #include <lib/pci/disk/ide.h>
 #include <lib/pci/pci.h>
+#include <lib/int/apic.h>
+
+#include <aoslib.h>
 
 EFI_SYSTEM_TABLE*   ST;
 EFI_BOOT_SERVICES*  BS;
@@ -29,15 +33,8 @@ void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
     void* kernel = mapalloc(&ksize, AOZORA_MEMORY_KERNEL);
 
     //print_map();
+    //init_apic();
 
-    //print_all_pci_devices();
-
-    if(ide_init())
-    {
-        byte buffer[2048] = {0};
-        ide_read_sectors(0, 0, 2, buffer);
-        printmem(buffer, 2048);
-    }
     while (1);
 }
 

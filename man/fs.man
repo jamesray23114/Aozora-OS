@@ -181,7 +181,7 @@ jfs: (version number 1)
         root directory entry: entry 0 (uses same layout as a normal directory)
             00 - 01: dir flags. 01000000
             01 - 02: os flags 
-            02 - 06: time of partition creation (no other files exist inline with the root directory)
+            02 - 06: time of partition creation (no other files exist static inline with the root directory)
             06 - 10: number of first subdirectory
             10 - 16: '/' '\0' '\0' '\0' '\0' '\0' (the directory name is extended 0 times)
 

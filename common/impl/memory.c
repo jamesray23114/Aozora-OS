@@ -101,7 +101,7 @@ void addmap(aozora_memory memory) // does no check to ensure memory can fit in m
 
 }
 
-inline bool validatetype(aozora_memory_type type) // returns true for types that should not be alocated or freed
+static inline bool validatetype(aozora_memory_type type) // returns true for types that should not be alocated or freed
 {
     switch (type)
     {
@@ -219,7 +219,7 @@ void printmap(void* mapptr)
     gl_print_string(" was not found.\n\r");
 }
 
-inline void printblockhex(byte* ind, int size)
+static inline void printblockhex(byte* ind, int size)
 {
     for(int i = 0; i < size; i++)
     {   
@@ -231,7 +231,7 @@ inline void printblockhex(byte* ind, int size)
     }
 }
 
-inline void printblockchar(byte* ind, int size)
+static inline void printblockchar(byte* ind, int size)
 {
     for(int i = 0; i < size; i++)
     {   

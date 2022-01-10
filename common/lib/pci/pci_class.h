@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/typedef.h>
+#include <typedef.h>
 
 char* pci_class_to_string(byte class, byte subclass)
 {

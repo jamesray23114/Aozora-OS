@@ -21,8 +21,3 @@ static inline int p3(int number)
 {
     return number * number * number;
 }
-
-static inline int abs(int number)
-{
-    return number >= 0 ? number : number * -1;
-}

@@ -1,23 +1,23 @@
 #pragma once
 
-#include <lib/typedef.h>
+#include <typedef.h>
 #include <lib/gl/text.h>
 
 #define PCIMAP pci_memmap
 
 typedef struct pci_device_s pci_device;
 
-void  inline outb(int64 address, byte data)  {               asm volatile ( "outb %0, %1\n" : : "a" (data),   "Nd" (address) ); }
-byte  inline inb(int64 address)              { byte data;    asm volatile ( "inb %1, %0\n"  :   "=a" (data) : "Nd" (address) );  return data; }
+void  static inline outb(int64 address, byte data)  {               asm volatile ( "outb %0, %1\n" : : "a" (data),   "Nd" (address) ); }
+byte  static inline inb(int64 address)              { byte data;    asm volatile ( "inb %1, %0\n"  :   "=a" (data) : "Nd" (address) );  return data; }
 
-void  inline outw(int64 address, int16 data) {               asm volatile ( "outw %0, %1\n" : : "a" (data),   "Nd" (address) ); }
-int16 inline inw(int64 address)              { int16 data;   asm volatile ( "inw %1, %0\n"  :   "=a" (data) : "Nd" (address) );  return data; }
+void  static inline outw(int64 address, int16 data) {               asm volatile ( "outw %0, %1\n" : : "a" (data),   "Nd" (address) ); }
+int16 static inline inw(int64 address)              { int16 data;   asm volatile ( "inw %1, %0\n"  :   "=a" (data) : "Nd" (address) );  return data; }
 
-void  inline outl(int64 address, int32 data) {               asm volatile ( "outl %0, %1\n" : : "a" (data),   "Nd" (address) ); }
-int32 inline inl(int64 address)              { int32 data;   asm volatile ( "inl %1, %0\n"  :   "=a" (data) : "Nd" (address) );  return data; }
+void  static inline outl(int64 address, int32 data) {               asm volatile ( "outl %0, %1\n" : : "a" (data),   "Nd" (address) ); }
+int32 static inline inl(int64 address)              { int32 data;   asm volatile ( "inl %1, %0\n"  :   "=a" (data) : "Nd" (address) );  return data; }
 
-void  inline outq(int64 address, int64 data) {               asm volatile ( "outq %0, %1\n" : : "a" (data),   "Nd" (address) ); }
-int64 inline inq(int64 address)              { int64 data;   asm volatile ( "inq %1, %0\n"  :   "=a" (data) : "Nd" (address) );  return data; }
+void  static inline outq(int64 address, int64 data) {               asm volatile ( "outq %0, %1\n" : : "a" (data),   "Nd" (address) ); }
+int64 static inline inq(int64 address)              { int64 data;   asm volatile ( "inq %1, %0\n"  :   "=a" (data) : "Nd" (address) );  return data; }
 
 void    print_all_pci_devices();
 void    print_all_pci_devices_long();
@@ -46,7 +46,7 @@ typedef struct pci_device_s
 
 } pci_device;
 
-inline uint32 pci_read(uint32 bus, uint32 device, uint32 func, uint8 offset)
+static inline uint32 pci_read(uint32 bus, uint32 device, uint32 func, uint8 offset)
 {
     uint32 adr;
     adr =   (bus << 16)     | 
@@ -60,7 +60,7 @@ inline uint32 pci_read(uint32 bus, uint32 device, uint32 func, uint8 offset)
     return inl(0xCFC);
 }
 
-inline void pci_write(uint8 bus, uint8 device, uint8 func, uint8 offset, uint32 data) 
+static inline void pci_write(uint8 bus, uint8 device, uint8 func, uint8 offset, uint32 data) 
 {
     uint32 adr;
     adr =   (bus << 16)     | 
@@ -73,7 +73,7 @@ inline void pci_write(uint8 bus, uint8 device, uint8 func, uint8 offset, uint32 
     outl(0xCF8, adr);
 };
 
-inline uint32 device_read(pci_device dev, uint8 offset)
+static inline uint32 device_read(pci_device dev, uint8 offset)
 {
     uint32 adr;
     adr =   (dev.bus << 16)     | 
@@ -87,7 +87,7 @@ inline uint32 device_read(pci_device dev, uint8 offset)
     return inl(0xCFC);
 }
 
-inline void device_write(pci_device dev, uint8 offset, uint32 data) 
+static inline void device_write(pci_device dev, uint8 offset, uint32 data) 
 {
     uint32 adr;
     adr =   (dev.bus << 16)     | 

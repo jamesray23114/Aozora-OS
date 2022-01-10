@@ -1,6 +1,6 @@
 .SILENT:
 
-CFLAGS_BOOT := -ffreestanding -flto -fno-stack-protector -fshort-wchar -mno-red-zone -I ../boot/src -I ../common -Ofast -D QEMUBUILD=1  -mno-ms-bitfields
+CFLAGS_BOOT := -ffreestanding -flto -fno-stack-protector -fshort-wchar -finline-limit=1024 -mno-red-zone -I ../boot/src -I ../common -Ofast -mno-ms-bitfields
 TEMPDIR := ../_temp/common
 ENVDIR := ../_env               
 

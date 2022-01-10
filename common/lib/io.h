@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/typedef.h>
+#include <typedef.h>
 
 typedef enum key_e key;
 typedef enum mouse_event_e mouse_event;

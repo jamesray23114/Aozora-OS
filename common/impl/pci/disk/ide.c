@@ -25,7 +25,7 @@ struct ide_device {
    char     Model[41];    
 } ide_devices[4];
 
-inline void insl(uint64 adr, uint32 unused, uint32 count)
+static inline void insl(uint64 adr, uint32 unused, uint32 count)
 {
     uint32* buf = (uint32*)ide_buf;
     
@@ -97,7 +97,6 @@ bool ide_init()
             ide_devices[count].Reserved     = 1;
             ide_devices[count].Type         = type;
             ide_devices[count].Channel      = i; 
-            i = i2; // TODO: fix, i2 is needed for some reason, im assuming gcc is forgetting what regesters are storing what
             ide_devices[count].Drive        = j;
             ide_devices[count].Signature    = *((uint16*)(ide_buf + IDF_ATA_DEVICETYPE));
             ide_devices[count].Capabilities = *((uint16*)(ide_buf + IDF_ATA_CAPABILITIES));
@@ -121,23 +120,6 @@ bool ide_init()
         }
     }
 
-    for(int i = 0; i < 4; i++)
-        if(ide_devices[i].Reserved == 1)
-        {
-            gl_print_num(i, 10, 0, 0);
-            gl_print_string(":");
-            gl_print_num(ide_devices[i].Channel, 10, 0, 0);
-            gl_print_string(":");
-            gl_print_num(ide_devices[i].Drive, 10, 0, 0);
-            gl_print_string(": found ");
-            gl_print_string((char *[]){"ATA", "ATAPI"}[ide_devices[i].Type]);
-            gl_print_string(" drive size: ");
-            gl_print_num(ide_devices[i].Size / 1024 / 1024 / 2, 10, 0, 0);
-            gl_print_string("GB -> ");
-            gl_print_string(ide_devices[i].Model);
-            gl_print_char('\n');
-        }
-
     return true;
 }
 
@@ -145,7 +127,7 @@ void ide_read_buffer(byte channel, byte reg, uint32 buffer, uint32 quads)
 {
     if (reg > 0x07 && reg < 0x0C)
         ide_write(channel, REG_ATA_CONTROL, 0x80 | channels[channel].nIEN);
-    asm volatile ("movw %es, %r15w; movw %ds, %ax; movw %ax, %es;"); // TODO: remove or replace this assembly, i think this is causing a few strange problems
+    asm volatile ("movw %%es, %%r15w; movw %%ds, %%ax; movw %%ax, %%es;" : : : "rax", "r15"); // TODO: remove or replace this assembly, i think this is causing a few strange problems
     if (reg < 0x08)
         insl(channels[channel].base  + reg - 0x00, buffer, quads);
     else if (reg < 0x0C)
@@ -156,7 +138,7 @@ void ide_read_buffer(byte channel, byte reg, uint32 buffer, uint32 quads)
         insl(channels[channel].bmide + reg - 0x0E, buffer, quads);
     if (reg > 0x07 && reg < 0x0C)
        ide_write(channel, REG_ATA_CONTROL, channels[channel].nIEN);
-    asm volatile ("movw %r15w, %es;");
+    asm volatile ("movw %%r15w, %%es;" : : : "r15");
 }
 
 byte ide_read(byte channel, byte reg)

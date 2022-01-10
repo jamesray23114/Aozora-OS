@@ -2,8 +2,10 @@
 
 #include <bootlib/print.h>
 
-#include <lib/typedef.h>
+#include <typedef.h>
 #include <lib/math.h>
+
+#include <aoslib.h>
 
 #define RGB 0
 #define BGR 1
