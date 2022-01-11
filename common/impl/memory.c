@@ -1,8 +1,45 @@
 #include <lib/memory.h>
 
-#include <bootlib/print.h>
+static inline const char* _amtts(aozora_memory_type type)
+{
+	switch (type)
+	{
+    case AOZORA_MEMORY_INVALID:
+		return "AOZORA_MEMORY_INVALID   ";
+    case AOZORA_MEMORY_FREE:
+		return "AOZORA_MEMORY_FREE      ";
+    case AOZORA_MEMORY_RESERVED:
+		return "AOZORA_MEMORY_RESERVED  ";
+    case AOZORA_MEMORY_NVS:
+		return "AOZORA_MEMORY_NVS       ";
+    case AOZORA_MEMORY_IO:
+		return "AOZORA_MEMORY_IO        ";
+    case AOZORA_MEMORY_BAD:
+		return "AOZORA_MEMORY_BAD       ";
+    case AOZORA_MEMORY_PERSISTENT:
+		return "AOZORA_MEMORY_PERSISTENT";
+    case AOZORA_MEMORY_GOP:
+		return "AOZORA_MEMORY_GOP       ";
+    case AOZORA_MEMORY_MAP:
+		return "AOZORA_MEMORY_MAP       ";
+    case AOZORA_MEMORY_KERNEL:
+		return "AOZORA_MEMORY_KERNEL    ";
+    case AOZORA_MEMORY_CODE:
+		return "AOZORA_MEMORY_CODE      ";
+    case AOZORA_MEMORY_DATA:
+		return "AOZORA_MEMORY_DATA      ";
+    case AOZORA_MEMORY_SHARED:
+		return "AOZORA_MEMORY_SHARED    ";
+    case AOZORA_MEMORY_BOOT:
+		return "AOZORA_MEMORY_BOOT      ";
+	case AOZORA_MEMORY_KDATA:
+		return "AOZORA_MEMORY_KDATA     ";
+	default:
+		return "AOZORA_MEMORY_UNKNOWN   ";
+	}
+}
 
-void splitmap(uintn at, uintn size, const byte loc) 
+void map_split(uintn at, uintn size, const byte loc) 
 // loc = 0 split on both sides
 // loc = 1 leave free below
 // loc = 2 leave free above
@@ -50,7 +87,7 @@ void mergemap(uintn at, uintn size, const byte loc)
     }
 }
 
-void addmap(aozora_memory memory) // does no check to ensure memory can fit in memmap
+void map_add(aozora_memory memory) // does no check to ensure memory can fit in memmap
 {
     uintn size = MEMMAP[0].low_address;
 
@@ -65,21 +102,21 @@ void addmap(aozora_memory memory) // does no check to ensure memory can fit in m
             }
             else if(memory.low_address == MEMMAP[i].low_address)
             {
-                splitmap(i, size, 1);
+                map_split(i, size, 1);
                 MEMMAP[i] = memory;
                 MEMMAP[i + 1].low_address = memory.high_address;
                 return;
             }
             else if(memory.high_address == MEMMAP[i - 1].high_address)
             {
-                splitmap(i, size, 2);
+                map_split(i, size, 2);
                 MEMMAP[i] = memory;
                 MEMMAP[i - 1].high_address = memory.low_address;
                 return;
             }
             else if(MEMMAP[i - 1].type == AOZORA_MEMORY_FREE)
             {
-                splitmap(i, size, 0);
+                map_split(i, size, 0);
                 MEMMAP[i - 1].high_address = memory.low_address;
                 MEMMAP[i] = memory;
                 MEMMAP[i + 1].type =            AOZORA_MEMORY_FREE;
@@ -89,7 +126,7 @@ void addmap(aozora_memory memory) // does no check to ensure memory can fit in m
             }
             else
             {
-                splitmap(i, size, 2);
+                map_split(i, size, 2);
                 MEMMAP[i] = memory;
                 return;
             }
@@ -129,7 +166,7 @@ static inline bool validatetype(aozora_memory_type type) // returns true for typ
     }
 }
 
-void* mapalloc(uintn* size, aozora_memory_type type)
+void* map_alloc(uintn* size, aozora_memory_type type)
 {
     uintn mapsize = MEMMAP[0].low_address;
     uintn maxsize = MEMMAP[0].high_address;
@@ -157,14 +194,14 @@ void* mapalloc(uintn* size, aozora_memory_type type)
                 else
                     t.high_address = MEMMAP[i].low_address + *size;
 
-                addmap(t);
+                map_add(t);
                 return ptr;
             }
     }
     return 0;
 }
 
-void mapfree(void* ptr)
+void map_ree(void* ptr)
 {
     uintn mapsize = MEMMAP[0].low_address;
     uintn maxsize = MEMMAP[0].high_address;
@@ -202,7 +239,7 @@ void mapfree(void* ptr)
     }
 }
 
-void printmap(void* mapptr)
+void hd_printMap(void* mapptr)
 {
     uintn size = MEMMAP[0].low_address;
 
@@ -210,41 +247,41 @@ void printmap(void* mapptr)
         if(MEMMAP[i].low_address == (uintn) mapptr)
             {
                 size = MEMMAP[i].high_address - MEMMAP[i].low_address;
-                printmem(mapptr, size);
+                hd_printMem(mapptr, size);
                 return;
             }
 
-    gl_print_string("map at ");
-    gl_print_num((uintn) mapptr, 16, 0, 0);
-    gl_print_string(" was not found.\n\r");
+    gl_puts("map at ");
+    gl_putnum((uintn) mapptr, 16, 0, 0);
+    gl_puts(" was not found.\n\r");
 }
 
-static inline void printblockhex(byte* ind, int size)
+static inline void printBlockHex(byte* ind, int size)
 {
     for(int i = 0; i < size; i++)
     {   
-        gl_print_char(' ');
+        gl_putc(' ');
         if(i % 4 == 0 && i)
-            gl_print_char(' ');
+            gl_putc(' ');
 
-        gl_print_num(ind[i], 16, 2, '0');
+        gl_putnum(ind[i], 16, 2, '0');
     }
 }
 
-static inline void printblockchar(byte* ind, int size)
+static inline void printBlockChar(byte* ind, int size)
 {
     for(int i = 0; i < size; i++)
     {   
         byte ch = ind[i];
 
         if(ch < 0x20 || ch > 0x7f)
-            gl_print_char('.');
+            gl_putc('.');
         else         
-            gl_print_char(ch);
+            gl_putc(ch);
     }
 } 
 
-void printmem(void* ptr, uintn count)
+void hd_printMem(void* ptr, uintn count)
 {
     if(count > 0xfffe)
         count = 0xfffe;
@@ -260,15 +297,59 @@ void printmem(void* ptr, uintn count)
 
     for(int i = 0; i < blockcount; i++)
     {
-        gl_print_num(i * bsize, 16, 4, '0');
-        gl_print_string(" - ");
-        gl_print_num((i + 1) * bsize, 16, 4, '0');
-        gl_print_string(":");
+        gl_putnum(i * bsize, 16, 4, '0');
+        gl_puts(" - ");
+        gl_putnum((i + 1) * bsize, 16, 4, '0');
+        gl_puts(":");
         
-        printblockhex(ptr + i * bsize, bsize);
-        gl_print_string(" |");
-        printblockchar(ptr + i * bsize, bsize);
+        printBlockHex(ptr + i * bsize, bsize);
+        gl_puts(" |");
+        printBlockChar(ptr + i * bsize, bsize);
 
-        gl_print_string("\n\r");
+        gl_puts("\n\r");
     }
+}
+
+static inline void print_aosmem(aozora_memory memory) 
+{		
+	gl_puts(_amtts(memory.type));
+
+	gl_puts(" ");
+	gl_putnum(memory.low_address, 16, 9, ' ');
+	gl_puts(" -> ");
+	gl_putnum(memory.high_address, 16, 9, ' ');
+
+	gl_puts(": size = ");
+	gl_putnum(memory.high_address - memory.low_address, 10, 1, 0);
+
+	gl_puts(" bytes\n\r");
+}
+
+void mem_print()
+{
+	uintn count = MEMMAP[0].low_address;
+	uintn size  = MEMMAP[0].high_address;
+
+	uintn free = 0;
+
+	gl_putnum(count, 10, 1, 0);
+	gl_puts(" aozora memory mappings \n\r");
+	gl_putnum(size, 10, 1, 0);
+	gl_puts(" bytes of ram \n\r");
+
+    for(int i = 1; i < count + 1; i++)
+    {
+		gl_puts("memory ");
+		gl_putnum(i, 10, 2, ' ');
+		gl_puts(": ");
+
+		if(MEMMAP[i].type == AOZORA_MEMORY_FREE)
+			free += (MEMMAP[i].high_address - MEMMAP[i].low_address);
+
+		print_aosmem(MEMMAP[i]); // TODO: replace with printf
+  	}	
+
+ 	gl_puts("free memory: ");
+	gl_putnum(free, 10, 0, 0);
+	gl_puts(" bytes \n\n\r");
 }

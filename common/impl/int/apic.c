@@ -1,7 +1,7 @@
 #include <lib/int/apic.h>
 #include <lib/cpu.h>
 
-bool init_apic()
+bool apic_init()
 {
     uint eax, edx;
 
@@ -21,10 +21,10 @@ bool init_apic()
     asm(".att_syntax prefix");
 
     // TODO: replace with single static inline statement
-    cpuGetMSR(0x1B, &eax, &edx);
+    cpu_getMSR(0x1B, &eax, &edx);
     eax &= 0xfffff000;
     eax |= 0x800;
-    cpuSetMSR(0x1B, eax, edx);
+    cpu_setMSR(0x1B, eax, edx);
 
-    gl_print_num(eax, 16, 0, 0);
+    gl_putnum(eax, 16, 0, 0);
 }

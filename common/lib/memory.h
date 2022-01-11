@@ -1,19 +1,21 @@
 #pragma once
 
 #include <typedef.h>
+#include <lib/gl/gl.h>
 
 #define MEMMAP aos_memmap
 
 typedef enum aozora_memory_type_e aozora_memory_type;
 typedef struct aozora_memory_s aozora_memory;
 
-void    splitmap(uintn at, uintn size, const byte loc);
-void    addmap(aozora_memory memory); // does no check to ensure memory can fit in memmap
-void*   mapalloc(uintn* size, aozora_memory_type type);
-void    mapfree(void* ptr);
+void    map_split(uintn at, uintn size, const byte loc);
+void    map_add(aozora_memory memory); // does no check to ensure memory can fit in memmap
+void*   map_alloc(uintn* size, aozora_memory_type type);
+void    map_ree(void* ptr);
+void    mem_print();
 
-void    printmap(void* mapptr);
-void    printmem(void* ptr, uintn count);
+void    hd_printMap(void* mapptr);
+void    hd_printMem(void* ptr, uintn count);
 
 typedef enum aozora_memory_type_e
 {

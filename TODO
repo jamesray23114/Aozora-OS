@@ -22,13 +22,13 @@ refactoring: jan 2021
 [ ] move small / common c files to headers file
 [ ] remove depedencies to boot in common lib
 [ ] improve consistency in code style
-    - variables are all lowercase with no _, variables should be small
-    - const are all uppercase
-    - macros should be all uperecase
-    - function like macros should start with fn_
-    - global variables should all be const, otherwise mark variable with global_
-    - functions should be in camalCase with the library it belongs to being in front i.e. gl_myFunction()
-[x] inpliment more helper functions
+    - [ ] variables are all lowercase with no _, variables should be small
+    - [x] const are all uppercase
+    - [x] macros should be all uppercase
+    - [ ] function like macros should start with _
+    - [x] remove global variables of anything that isnt a static memory location, global variables in .c files are ok.
+    - [x] functions should be in camalCase with the library it belongs to being in front i.e. gl_myFunction()
+[x] implement more helper functions
 [ ]
 
 OS checklist:

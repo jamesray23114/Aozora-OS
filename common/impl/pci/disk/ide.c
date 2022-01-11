@@ -35,19 +35,19 @@ static inline void insl(uint64 adr, uint32 unused, uint32 count)
 
 bool ide_init()
 {
-    pci_device ide = get_device(1, 1);
+    pci_device ide = pci_getDevice(1, 1);
 
     if(ide.header_ver == 100)
     {   
-        gl_print_string("could not find ide controller.");
+        gl_puts("could not find ide controller.");
         return false;
     }
 
-    uint32 BAR0 = device_read(ide, 16);
-    uint32 BAR1 = device_read(ide, 20);
-    uint32 BAR2 = device_read(ide, 24);
-    uint32 BAR3 = device_read(ide, 28);
-    uint32 BAR4 = device_read(ide, 32);
+    uint32 BAR0 = pci_read(ide, 16);
+    uint32 BAR1 = pci_read(ide, 20);
+    uint32 BAR2 = pci_read(ide, 24);
+    uint32 BAR3 = pci_read(ide, 28);
+    uint32 BAR4 = pci_read(ide, 32);
 
     int count = 0;
 
@@ -90,7 +90,7 @@ bool ide_init()
             }
 
             // read identify data
-            ide_read_buffer(i, REG_ATA_DATA, (uintn) ide_buf, 128);
+            ide_readBuffer(i, REG_ATA_DATA, (uintn) ide_buf, 128);
 
 
             // read device parameters
@@ -123,7 +123,7 @@ bool ide_init()
     return true;
 }
 
-void ide_read_buffer(byte channel, byte reg, uint32 buffer, uint32 quads) 
+void ide_readBuffer(byte channel, byte reg, uint32 buffer, uint32 quads) 
 {
     if (reg > 0x07 && reg < 0x0C)
         ide_write(channel, REG_ATA_CONTROL, 0x80 | channels[channel].nIEN);
@@ -199,12 +199,12 @@ byte ide_poll(byte channel, bool advanced_check)
     return 0;
 }
 
-void ide_print_error(uint32 drive, byte err)
+void ide_printError(uint32 drive, byte err)
 {
 
 }
 
-void ide_read_sectors(byte drive, uintn location, uintn sectors, byte* buffer)
+void ide_readSectors(byte drive, uintn location, uintn sectors, byte* buffer)
 {
     byte lba_mode, dma = 0, cmd;
     byte lba_io[6];
@@ -291,13 +291,12 @@ void ide_read_sectors(byte drive, uintn location, uintn sectors, byte* buffer)
     uint16* wbuffer = (uint16*) buffer;
     for (int i = 0; i < sectors * words; i++) 
     {
-       if(err = ide_poll(channel, 1)) { gl_print_string("error\n"); return; } 
-        print_num(i, 10, 5, ' ');
+       if(err = ide_poll(channel, 1)) { gl_puts("error\n"); return; } 
         wbuffer[i] = inw(bus);      
     }
 }
 
-void ide_write_sectors(byte drive, uintn location, byte sectors, byte* buffer)
+void ide_writeSectors(byte drive, uintn location, byte sectors, byte* buffer)
 {
     byte lba_mode, dma = 0, cmd;
     byte lba_io[6];

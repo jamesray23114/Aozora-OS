@@ -95,12 +95,14 @@
 //
 
 bool ide_init();
+// TODO: determine if these functions need to be extern or should be moved into c file
 byte ide_read(byte channel, byte reg);
 byte ide_write(byte channel, byte reg, byte data);
 byte ide_poll(byte channel, bool advanced_check);
-void ide_read_buffer(byte channel, byte reg, uint32 buffer, uint32 quads);
+void ide_readBuffer(byte channel, byte reg, uint32 buffer, uint32 quads);
+//
 
-void ide_print_error(unsigned int drive, unsigned char err);
+void ide_printError(unsigned int drive, unsigned char err); // TODO: implement
 
-void ide_read_sectors(byte drive, uintn location, uintn sectors, byte* buffer);
-void ide_write_sectors(byte drive, uintn location, byte sectors, byte* buffer);
+void ide_readSectors(byte drive, uintn location, uintn sectors, byte* buffer);
+void ide_writeSectors(byte drive, uintn location, byte sectors, byte* buffer);

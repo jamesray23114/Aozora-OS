@@ -69,7 +69,18 @@ static inline intn imin(intn a, intn b)                         { return a < b ?
  
 // static inline f64  iroot(f64 in, intn to);
 // static inline f64  root(f64 in, f64 to);
-// static inline f64  sqrt(f64 in); //TODO: remove sqrt from math.h, reimpliment here
+static inline f64  sqrt(f64 in) { __builtin_sqrtf(in); }
+static inline intn isqrt(intn in) 
+{
+    if (in == 0 || in == 1)
+        return in;
+ 
+    intn i, result;
+    for (i = 1, result = 1; result <= in; i++)
+      result = i * i;
+    
+    return i - 1;
+}
 // static inline f64  cbrt(f64 in);
  
 // static inline f64  epow(f64 to);
@@ -108,8 +119,8 @@ static inline bool  strisself(const char* in, const char* cmp) { for(int i = 0; 
 static inline const char* strtoupper(const char* in)           { for(int i = 0; in[i]; i++) toupper(in[i]);        return in; }
 static inline const char* strtolower(const char* in)           { for(int i = 0; in[i]; i++) tolower(in[i]);        return in; }
 
-static inline bool strcmp(const char* str1, const char* str2)               { for(int i = 0; in[i] || cmp[i]; i++) if(str1[i] != str2[i]) return false; return true; } 
-static inline bool memcmp(const void* buf1, const void* buf2, uintn size)   { for(int i = 0; size; i++) if(buf1[i] != buf2[i]) return false; return true;}
+static inline bool strcmp(const char* str1, const char* str2)               { for(int i = 0; str1[i] || str2[i]; i++) if(str1[i] != str2[i]) return false; return true; } 
+static inline bool memcmp(const void* buf1, const void* buf2, uintn size)   { for(int i = 0; size; i++) if(((byte*)buf1)[i] != ((byte*)buf2)[i]) return false; return true;}
 
 // TODO: output
 void printf(const char* format, ...);

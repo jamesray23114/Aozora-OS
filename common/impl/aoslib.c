@@ -24,17 +24,17 @@ start:
             switch (format[i])
             {
             case '%':
-                gl_print_char('%');
+                gl_putc('%');
                 break;
 
             case 'f':
             case 'F':
-                gl_print_string("print floats not implimented");
+                gl_puts("print floats not implimented");
                 break;
 
             case 'e':
             case 'E':
-                gl_print_string("print floats not implimented");
+                gl_puts("print floats not implimented");
                 break;
 
             case 'd':
@@ -42,39 +42,39 @@ start:
             case 'u': 
             {
                 uintn value = va_arg(args, uintn);
-                gl_print_num(value, 10, minsize, padchar);        
+                gl_putnum(value, 10, minsize, padchar);        
             }   break;
 
             case 'x':
             case 'X':
             {
                 uintn value = va_arg(args, uintn);
-                gl_print_num(value, 16, minsize, padchar);        
+                gl_putnum(value, 16, minsize, padchar);        
             }   break;
 
             case 'b':
             {
                 uintn value = va_arg(args, uintn);
-                gl_print_num(value, 2, minsize, padchar); 
+                gl_putnum(value, 2, minsize, padchar); 
             }   break;
 
             case 'o':
             case 'O':
             {
                 uintn value = va_arg(args, uintn);
-                gl_print_num(value, 8, minsize, padchar); 
+                gl_putnum(value, 8, minsize, padchar); 
             }   break;
 
             case 's':
             {
                 char* value = va_arg(args, char*);
-                gl_print_string(value);
+                gl_puts(value);
             }   break;
 
             case 'c':
             {
                 char value = va_arg(args, int);
-                gl_print_char(value);
+                gl_putc(value);
             } break;
 
             default:
@@ -82,7 +82,7 @@ start:
             }
         }
         else
-            gl_print_char(format[i]);
+            gl_putc(format[i]);
     }
 
 end:

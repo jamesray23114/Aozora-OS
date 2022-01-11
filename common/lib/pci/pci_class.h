@@ -2,7 +2,7 @@
 
 #include <typedef.h>
 
-char* pci_class_to_string(byte class, byte subclass)
+char* pci_toString(byte class, byte subclass)
 {
     switch (class)
     {

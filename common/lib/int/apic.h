@@ -4,7 +4,7 @@
 #include <typedef.h>
 #include <lib/gl/text.h>
 
-bool init_apic();
+bool apic_init();
 
-void set_handler();
-void print_apic_info();
+void apic_setHandler();
+void apic_printInfo();

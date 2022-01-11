@@ -1,11 +1,8 @@
 #pragma once
 
-#include <bootlib/print.h>
-
 #include <typedef.h>
-#include <lib/math.h>
-
 #include <aoslib.h>
+#include <lib/gl/text.h>
 
 #define RGB 0
 #define BGR 1
@@ -45,11 +42,11 @@ typedef union   bgr_pixel_u     bgr_pixel;
 typedef enum    pixel_format_e  pixel_format;
 typedef enum    draw_mode_e     draw_mode;
 
-void gl_draw_line(uintn x1, uintn y1, uintn x2, uintn y2, uint32 pixel);
-void gl_draw_rect(uintn x1, uintn y1, uintn x2, uintn y2, uint32 pixel, const draw_mode mode);
-void gl_draw_square(uintn x, uintn y, uintn size, uint32 pixel, const draw_mode mode);
-void gl_draw_img(uintn x, uintn y, uintn sizex, uintn sizey, const uint32* map);
-void gl_draw_mask(uintn x, uintn y, uintn sizex, uintn sizey, uint32 pixel, const byte* mask);
+void gl_drawLine(uintn x1, uintn y1, uintn x2, uintn y2, uint32 pixel);
+void gl_drawRect(uintn x1, uintn y1, uintn x2, uintn y2, uint32 pixel, const draw_mode mode);
+void gl_drawSquare(uintn x, uintn y, uintn size, uint32 pixel, const draw_mode mode);
+void gl_drawMap(uintn x, uintn y, uintn sizex, uintn sizey, const uint32* map);
+void gl_drawMask(uintn x, uintn y, uintn sizex, uintn sizey, uint32 pixel, const byte* mask);
 
 typedef enum pixel_format_e
 {
@@ -107,9 +104,9 @@ typedef struct bitmask_pixel_s
     uint32 none;
 } bitmask_pixel;
 
-static graphics_mode* gl_mode = (graphics_mode*) 0x33760; //THIS CAN CAUSE ISSUES, PLEASE REVIEW IN FUTURE
+static graphics_mode* gl_mode = (graphics_mode*) 0x33760; // TODO: check if location exists during boot
 
-static inline uint32 gl_pixel(byte red, byte blue, byte green)
+static inline uint32 gl_pixel(const byte red, const byte blue, const byte green) 
 {   
     switch (GLMODE->format)
     {
@@ -124,13 +121,13 @@ static inline uint32 gl_pixel(byte red, byte blue, byte green)
     return 0;
 }
 
-static inline void gl_draw_linear(uintn start, uintn count, uint32 pixel) // does not account for pitch
+static inline void gl_drawLinear(uintn start, uintn count, uint32 pixel) // TODO: determine if we need to check for out of bounds writes
 {
     for(int i = 0; i < count; i++)
         GLMODE->location[i + start] = pixel;
 }
 
-static inline void gl_draw_pixel(uintn x, uintn y, uint32 pixel)
+static inline void gl_drawPixel(uintn x, uintn y, uint32 pixel) // TODO: determine if we need to check for out of bounds writes
 {
     GLMODE->location[y * GLMODE->pitch + x] = pixel;
 }
