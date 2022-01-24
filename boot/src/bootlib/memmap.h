@@ -199,11 +199,10 @@ aozora_status map_fetch(EFI_HANDLE mainhandle)  // TODO: split into smaller func
 
     EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = gop_locate();
 
-
     uintn gopbase = gop->Mode->FrameBufferBase;
     uintn gopsize = gop->Mode->FrameBufferSize;
 
-    { // TODO: move to gop or to boot.c, add ability to load based off of uefi varaibles
+    { // TODO: move to gop.c
         graphics_mode gm;
 
         gop_setResolution(gop, 640,  360 );
@@ -229,42 +228,26 @@ aozora_status map_fetch(EFI_HANDLE mainhandle)  // TODO: split into smaller func
     BTSV->GetMemoryMap(&size, memmap, &key, &descsize, &ver);
     BTSV->ExitBootServices(mainhandle, key);
 
-    //for(uintn i = 0; i < size / descsize; i++)
-    //{
-    //    EFI_MEMORY_DESCRIPTOR mem = *(EFI_MEMORY_DESCRIPTOR*)(((uintn)memmap) + i * descsize);
-    //    print_string("memory: ");
-    //    print_num(i, 10, 0, 0);
-    //    print_string(" type: ");
-    //    print_num(mem.Type, 10, 0, 0);
-    //    print_string(" size: ");
-    //    print_num(mem.NumberOfPages, 10, 0, 0);
-    //    print_string("\n\r");
-    //}
-
     map_traslate(memmap, size, descsize);
 
     if(MEMMAP[1].type != AOZORA_MEMORY_FREE)
         goto errornf;
-    if(MEMMAP[1].high_address < 0x35000)
+    if(MEMMAP[1].high_address < 0x36000)
         goto errornf;
 
-    aozora_memory etcmem = {AOZORA_MEMORY_KDATA, 0, 0x4000};
-    aozora_memory mapmem = {AOZORA_MEMORY_MAP, 0x4000, 0x33760};
-    aozora_memory datmem = {AOZORA_MEMORY_KDATA, 0x33760, 0x35000};
+    aozora_memory mapmem = {AOZORA_MEMORY_MAP, 0x0000, 0x36000};
     aozora_memory gopmem = {AOZORA_MEMORY_GOP, gopbase, gopbase + gopsize};
-    map_add(etcmem);
     map_add(mapmem);
-    map_add(datmem);  
     map_add(gopmem);
     
-    //mem_print();
+    //map_print();
 
     pci_addDevices();
 
     return 0;
 
 errornf:
-    gl_puts("error allocating aozora-os memory, memory at location 0 - 0x35000 is not free\n\r");
-    mem_print();
+    gl_puts("error allocating aozora-os memory, memory at location 0 - 0x36000 is not free\n\r");
+    map_print();
     return 1;
 }

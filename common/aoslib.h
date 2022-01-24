@@ -9,6 +9,8 @@
 #define PI 3.1415926535
 #define E  2.7182818284 
 
+typedef struct array_s { uintn count; void* data; } array;
+
 // TODO: string conversions
 // intn strtoint(const char* in);
 // f64  strtoflt(const char* in);
@@ -35,11 +37,12 @@ static inline void strcat(char* dst,  const char* src) { memcopy(dst + strlen(ds
 // TODO: rand
 uintn rand();
 void srand(uintn seed);
-// f64  norm(intn tonormal, intn lower, intn higher);
-// f64  fnorm(f64 tonormal, f64 lower, f64 higher);
 
 
 // TODO: math, remove lib/math.h
+// f64  norm(intn tonormal, intn lower, intn higher);
+// f64  fnorm(f64 tonormal, f64 lower, f64 higher);
+
 static inline uintn rol(uintn value, byte c)                    { return (value << c) | (value >> (64 - c)); }
 static inline uintn ror(uintn value, byte c)                    { return (value >> c) | (value << (64 - c)); }        
 
@@ -109,22 +112,37 @@ static inline bool isself(char in, char cmp)   { return cmp == in || isalpha(in)
 static inline char toupper(char in)            { return islower(in) ? in + 20 : in; }
 static inline char tolower(char in)            { return isupper(in) ? in - 20 : in; }
 
-static inline bool  strisalnum(const char* cmp)          { for(int i = 0; cmp[i]; i++) if(!isalnum(cmp[i]))  return false; return true; }     
-static inline bool  strisdec(const char* cmp)            { for(int i = 0; cmp[i]; i++) if(!isdec(cmp[i]))    return false; return true; } 
-static inline bool  strishex(const char* cmp)            { for(int i = 0; cmp[i]; i++) if(!ishex(cmp[i]))    return false; return true; } 
-static inline bool  strisalpha(const char* cmp)          { for(int i = 0; cmp[i]; i++) if(!isalpha(cmp[i]))  return false; return true; } 
-static inline bool  strisupper(const char* cmp)          { for(int i = 0; cmp[i]; i++) if(!isupper(cmp[i]))  return false; return true; } 
-static inline bool  strislower(const char* cmp)          { for(int i = 0; cmp[i]; i++) if(!islower(cmp[i]))  return false; return true; } 
-static inline bool  strisself(const char* in, const char* cmp) { for(int i = 0; in[i] || cmp[i]; i++) if(!isself(in[i], cmp[i])) return false; return true; } 
-static inline const char* strtoupper(const char* in)           { for(int i = 0; in[i]; i++) toupper(in[i]);        return in; }
-static inline const char* strtolower(const char* in)           { for(int i = 0; in[i]; i++) tolower(in[i]);        return in; }
+static inline bool  strisalnum(const char* cmp)                 { for(int i = 0; cmp[i]; i++) if(!isalnum(cmp[i]))  return false; return true; }     
+static inline bool  strisdec(const char* cmp)                   { for(int i = 0; cmp[i]; i++) if(!isdec(cmp[i]))    return false; return true; } 
+static inline bool  strishex(const char* cmp)                   { for(int i = 0; cmp[i]; i++) if(!ishex(cmp[i]))    return false; return true; } 
+static inline bool  strisalpha(const char* cmp)                 { for(int i = 0; cmp[i]; i++) if(!isalpha(cmp[i]))  return false; return true; } 
+static inline bool  strisupper(const char* cmp)                 { for(int i = 0; cmp[i]; i++) if(!isupper(cmp[i]))  return false; return true; } 
+static inline bool  strislower(const char* cmp)                 { for(int i = 0; cmp[i]; i++) if(!islower(cmp[i]))  return false; return true; } 
+static inline bool  strisself(const char* in, const char* cmp)  { for(int i = 0; in[i] || cmp[i]; i++) if(!isself(in[i], cmp[i])) return false; return true; } 
+static inline const char* strtoupper(const char* in)            { for(int i = 0; in[i]; i++) toupper(in[i]);        return in; }
+static inline const char* strtolower(const char* in)            { for(int i = 0; in[i]; i++) tolower(in[i]);        return in; }
 
 static inline bool strcmp(const char* str1, const char* str2)               { for(int i = 0; str1[i] || str2[i]; i++) if(str1[i] != str2[i]) return false; return true; } 
 static inline bool memcmp(const void* buf1, const void* buf2, uintn size)   { for(int i = 0; size; i++) if(((byte*)buf1)[i] != ((byte*)buf2)[i]) return false; return true;}
 
+static inline const char* memchr(const void* buf, uintn size, char val) { for(int i = 0; i < size; i++) if(val == ((char*)buf)[i]) return buf + i; return nullptr; }
+static inline const char* strchr(const char* str, char val)             { for(int i = 0; str[i]; i++) if(val == str[i]) return str + i; return nullptr; } 
+static inline const char* strrchr(const char* str, char val)            { uintn out = 0; for(int i = 0; str[i]; i++) if(val == str[i]) out = (uintn)str + i; return (char*) out; }
+static inline const char* strstr(const char* str1, const char* str2)    { for(int i = 0; str1[i]; i++) for(int j = 0; str2[j] == str1[i + j]; j++) if(j == strlen(str2) - 1) return str1 + i; return nullptr; }
+
+// static inline const array memchrall(const void* buf, uintn size, char val);
+// static inline const array strchrall(const char* str, char val);
+// static inline const array strrchrall(const char* str, char val);
+// static inline const array strstrall(const char* str1, const char* str2);
+
+// static inline const array strtok(const char* str, const char delim);
+
+// static inline const char* strerr(aozora_error code); //TODO impliment error codes
 // TODO: output
 void printf(const char* format, ...);
 
 
 // TODO: clock
-// uintn time();
+// static inline uintn time();
+// static inline void sleep(uintn millis)
+// static inline void sleepext(uintn time, byte scale);

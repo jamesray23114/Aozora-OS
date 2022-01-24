@@ -1,0 +1,2 @@
+64 bit paging
+cr3 -> 

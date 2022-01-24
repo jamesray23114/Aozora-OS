@@ -4,16 +4,16 @@
 
 static inline EFI_GRAPHICS_OUTPUT_PROTOCOL* gop_locate()
 {
-    EFI_GUID gop_guid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+    EFI_GUID guid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
 
     EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
-    BS->LocateProtocol(&gop_guid, null, (void**)&gop);
+    BS->LocateProtocol(&guid, null, (void**)&gop);
     gop->QueryMode(gop, 0, null, null);
 
     return gop;
 }
 
-static inline void gop_setResolution(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop, uint32 resx, uint32 resy) // TODO: use bin sort to find resolution
+static inline void gop_setResolution(EFI_GRAPHICS_OUTPUT_PROTOCOL* gop, uint32 resx, uint32 resy)
 {
     uint32 count = gop->Mode->MaxMode;
 

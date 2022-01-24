@@ -105,7 +105,7 @@ jfs: (version number 1)
         24 - 26: size of allocation table
         26 - 28: checksum of allocation table
         28 - 30: reserved
-        30 - 32: number 0x57AA
+        30 - 32: number 0x57A6
         32 - 64: reserved by jfs for future use, should be filled with 0x90 (noop) for jfs v1
         64+    : unspecified, can be used for anyuse and is likely os dependent, note logical sector sizes can be 64 bytes long. 
                     if unused fill with 0x90 (noop)

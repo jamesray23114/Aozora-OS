@@ -33,5 +33,3 @@ typedef     int64       bool;
 typedef     uint8       aozora_status;
 
 #undef _U
-
-static     memory       ram = 0;

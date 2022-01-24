@@ -10,9 +10,9 @@ typedef struct aozora_memory_s aozora_memory;
 
 void    map_split(uintn at, uintn size, const byte loc);
 void    map_add(aozora_memory memory); // does no check to ensure memory can fit in memmap
-void*   map_alloc(uintn* size, aozora_memory_type type);
+void*   map_alloc(uintn size, aozora_memory_type type);
 void    map_ree(void* ptr);
-void    mem_print();
+void    map_print();
 
 void    hd_printMap(void* mapptr);
 void    hd_printMem(void* ptr, uintn count);
@@ -49,4 +49,4 @@ typedef struct aozora_memory_s
     uintn               high_address;    
 } aozora_memory; 
 
-static aozora_memory* aos_memmap = (aozora_memory*) 0x8000; // TODO: THIS CAN CAUSE ISSUES, PLEASE REVIEW IN FUTURE
+static aozora_memory* aos_memmap = (aozora_memory*) 0x8000; // TODO: this needs to be changed to allow for the moving of the memmap

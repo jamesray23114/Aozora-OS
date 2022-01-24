@@ -1,10 +1,13 @@
 
 going fowards:
-[ ] setup memory tables 
-[ ] setup interrupts
+[-] setup memory tables 
+[x] setup interrupts
+    [ ] setup apic to handle external interrupts
+    [ ] create handlers for all standard exceptions
+    [ ] create debugger using int1 / int3
+    [ ] keyboard io
 [x] disk io
 [ ] interact with acpi 
-[ ] keyboard io
 [ ] impliment file system + linux jfs tool
 [ ] kernel loader / exit boot loader
 [ ] cstdlib
@@ -12,29 +15,29 @@ going fowards:
 [ ] running executables / tasks
 [ ] multithreading and processes
 [ ] porting gcc / own compiler
-[ ] 
-[ ]
-[ ]
-[ ]
+[ ] making installer to disk
 
 refactoring: jan 2021
 [ ] refactering and optimization
 [ ] move small / common c files to headers file
-[ ] remove depedencies to boot in common lib
-[ ] improve consistency in code style
-    - [ ] variables are all lowercase with no _, variables should be small
-    - [x] const are all uppercase
-    - [x] macros should be all uppercase
-    - [ ] function like macros should start with _
-    - [x] remove global variables of anything that isnt a static memory location, global variables in .c files are ok.
-    - [x] functions should be in camalCase with the library it belongs to being in front i.e. gl_myFunction()
-[x] implement more helper functions
-[ ]
+[x] remove depedencies to boot in common lib
+[x] improve consistency in code style
+[ ] implement more helper functions
+    [ ] string conversions
+    [ ] std algorithms 
+    [ ] memory and memory management
+    [x] random functions
+    [ ] math
+    [~] output
+    [ ] timing
+[ ] replace code in files with aoslib.h functions where applicable
+[ ] rethink how malloc and free work, allow for resizing of memmap. 
+[ ] update README.md and /man
 
 OS checklist:
+[ ] make vt console and window manager
 [ ] get and set time
 [ ] interaction with text file
 [ ] calculator
 [ ] power computer off and reboot
 [ ] load and display image
-[ ] make vt console and window manager

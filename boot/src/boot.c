@@ -27,13 +27,21 @@ void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
     if( map_fetch(ImageHandle) )
         while(1);
 
-    uintn ksize = 2097152;
-    void* kernel = map_alloc(&ksize, AOZORA_MEMORY_KERNEL);
+    void* kernel = map_alloc(2097152, AOZORA_MEMORY_KERNEL);
 
-    //mem_print();
-    //apic_init();
+// begin
 
-    while (1);
+    cpu_enableInt();
+    cpu_addHandler(int_divzero, 0, true);
+
+    volatile int j = 0;
+    volatile int i = 100 / j;
+
+    printf("outside interrupt");
+
+    cpu_halt();
 }
 
 //asm ("call getrip\n getrip: mov (%%esp), %0\n" : "=r" (reg));
+//0b10010010
+//0b11001111

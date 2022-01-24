@@ -46,7 +46,7 @@ build:
 .PHONY: clean
 clean:
 	rm -r $(TEMPDIR) && mkdir $(TEMPDIR) && \
-	rm    $(ENVDIR)/Aozora-OS.iso
+	rm -f $(ENVDIR)/Aozora-OS.iso
 #===end clean===
 
 #===make run===
@@ -55,8 +55,9 @@ run: build
 
 	printf "STARTING RUN/AOZORA-OS: (OS: )\n"
 
-	rm -f $(ENVDIR)/qemu-log.txt
+	rm -f $(TEMPDIR)/qemu-log.txt
 	qemu-system-x86_64 \
+		-gdb tcp::9000 \
 		-accel tcg,thread=single \
 		-cpu Nehalem, \
 		-m 4G \
@@ -67,29 +68,10 @@ run: build
 		-device ide-hd,drive=bootdisk,bootindex=2 \
 		-device ide-hd,drive=harddisk,bootindex=1 \
 		-smp 1 -usb -vga std \
+		-D $(TEMPDIR)/qemu-log.txt \
+		-d cpu_reset \
 		-serial vc \
 #===end run===
-
-#===make run===
-.PHONY: shell
-shell: build
-
-	printf "STARTING RUN/AOZORA-OS: (OS: )\n"
-
-	rm -f $(ENVDIR)/qemu-log.txt
-	qemu-system-x86_64 \
-		-accel tcg,thread=single \
-		-cpu Nehalem, \
-		-m 4096 \
-		-no-reboot \
-		-drive format=raw,if=pflash,file=/usr/share/ovmf/x64/OVMF.fd,readonly=on \
-		-drive format=raw,if=none,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
-		-drive format=raw,if=none,file=$(ENVDIR)/harddrive.hhd,id=harddisk \
-		-device ide-hd,drive=bootdisk,bootindex=10 \
-		-device ide-hd,drive=harddisk,bootindex=9 \
-		-smp 1 -usb -vga std \
-		-serial vc \
-#===end shell===
 
 #===make debug===	
 .PHONY: debug

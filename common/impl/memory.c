@@ -166,19 +166,19 @@ static inline bool validatetype(aozora_memory_type type) // returns true for typ
     }
 }
 
-void* map_alloc(uintn* size, aozora_memory_type type)
+void* map_alloc(uintn size, aozora_memory_type type)
 {
     uintn mapsize = MEMMAP[0].low_address;
     uintn maxsize = MEMMAP[0].high_address;
 
     void* ptr = 0;
 
-    if(*size == 0 || *size > maxsize || validatetype(type))
+    if(size == 0 || size > maxsize || validatetype(type))
         return 0;
 
     for(int i = 1; i <= mapsize + 1; i++)
     {
-        if(MEMMAP[i].high_address - MEMMAP[i].low_address >= *size && MEMMAP[i].type == AOZORA_MEMORY_FREE)
+        if(MEMMAP[i].high_address - MEMMAP[i].low_address >= size && MEMMAP[i].type == AOZORA_MEMORY_FREE)
             {
                 aozora_memory t;
 
@@ -186,13 +186,13 @@ void* map_alloc(uintn* size, aozora_memory_type type)
                 t.low_address = MEMMAP[i].low_address;
                 t.type = type;
                 
-                if(MEMMAP[i].high_address - MEMMAP[i].low_address - 0x100000 <= *size || MEMMAP[i].high_address - MEMMAP[i].low_address - 0x100000 >= __INT64_MAX__)   
+                if(MEMMAP[i].high_address - MEMMAP[i].low_address - 0x4000 <= size || MEMMAP[i].high_address - MEMMAP[i].low_address - 0x4000 >= __INT64_MAX__)   
                 {             
                     t.high_address = MEMMAP[i].high_address;
-                    *size = MEMMAP[i].high_address - MEMMAP[i].low_address;
+                    size = MEMMAP[i].high_address - MEMMAP[i].low_address;
                 }
                 else
-                    t.high_address = MEMMAP[i].low_address + *size;
+                    t.high_address = MEMMAP[i].low_address + size;
 
                 map_add(t);
                 return ptr;
@@ -292,7 +292,8 @@ void hd_printMem(void* ptr, uintn count)
 
     uint blockcount = count / bsize; // number of lines to print
 
-    if(blockcount % bsize != 0)
+
+    if(blockcount % bsize != 0 || blockcount == 0)
         blockcount += 1;
 
     for(int i = 0; i < blockcount; i++)
@@ -325,7 +326,7 @@ static inline void print_aosmem(aozora_memory memory)
 	gl_puts(" bytes\n\r");
 }
 
-void mem_print()
+void map_print()
 {
 	uintn count = MEMMAP[0].low_address;
 	uintn size  = MEMMAP[0].high_address;
