@@ -32,16 +32,9 @@ void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 // begin
 
     cpu_enableInt();
-    cpu_addHandler(int_divzero, 0, true);
-
-    volatile int j = 0;
-    volatile int i = 100 / j;
-
-    printf("outside interrupt");
+    apic_init();
 
     cpu_halt();
 }
 
 //asm ("call getrip\n getrip: mov (%%esp), %0\n" : "=r" (reg));
-//0b10010010
-//0b11001111

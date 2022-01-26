@@ -3,13 +3,13 @@ going fowards:
 [-] setup memory tables 
 [x] setup interrupts
     [ ] setup apic to handle external interrupts
-    [ ] create handlers for all standard exceptions
-    [ ] create debugger using int1 / int3
+    [z] create handlers for all standard exceptions
+    [ ] create debugger using int3
     [ ] keyboard io
 [x] disk io
 [ ] interact with acpi 
 [ ] impliment file system + linux jfs tool
-[ ] kernel loader / exit boot loader
+[ ] kernel loader / exit boot loader fully
 [ ] cstdlib
 [ ] add networking
 [ ] running executables / tasks
