@@ -1,13 +1,14 @@
 
 going fowards:
-[-] setup memory tables 
-[x] setup interrupts
+[~] setup interrupts
     [ ] setup apic to handle external interrupts
-    [z] create handlers for all standard exceptions
+    [x] create handlers for all standard exceptions
     [ ] create debugger using int3
     [ ] keyboard io
 [x] disk io
-[ ] interact with acpi 
+[ ] interact with acpi
+[ ] load and reset gdt 
+[ ] setup paging
 [ ] impliment file system + linux jfs tool
 [ ] kernel loader / exit boot loader fully
 [ ] cstdlib
@@ -17,12 +18,13 @@ going fowards:
 [ ] porting gcc / own compiler
 [ ] making installer to disk
 
-refactoring: jan 2021
+refactoring: jan:feb 2021
+[ ] add comments to functions
 [ ] refactering and optimization
 [ ] move small / common c files to headers file
 [x] remove depedencies to boot in common lib
 [x] improve consistency in code style
-[ ] implement more helper functions
+[~] implement more helper functions
     [ ] string conversions
     [ ] std algorithms 
     [ ] memory and memory management
@@ -32,12 +34,11 @@ refactoring: jan 2021
     [ ] timing
 [ ] replace code in files with aoslib.h functions where applicable
 [ ] rethink how malloc and free work, allow for resizing of memmap. 
-[ ] update README.md and /man
 
 OS checklist:
 [ ] make vt console and window manager
 [ ] get and set time
 [ ] interaction with text file
-[ ] calculator
+[ ] interactive calculator
 [ ] power computer off and reboot
 [ ] load and display image

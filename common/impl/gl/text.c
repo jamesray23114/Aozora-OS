@@ -1229,6 +1229,16 @@ void gl_setCursor(uintn x, uintn y)
     cur_y = y;
 }
 
+uintn gl_getX()
+{
+    return cur_x;
+}
+
+uintn gl_getY()
+{
+    return cur_y;
+}
+
 void gl_get_dimensions(uintn* x, uintn* y)
 {
     *x = GLMODE->horizontal_resolution / CHARWIDTH;

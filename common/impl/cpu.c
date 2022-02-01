@@ -18,15 +18,15 @@ void cpu_enableInt()
     std.ist = 0;
     std.type_attributes = 0x8e;
 
-    for(int i = 0; i < 0x1000; i++)
-        idt[i] = std;
+    for(int i = 0; i < 256; i++)
+        cpu_addHandler(int_stdint, i, false);
 
 
     idtr[0] = 255;
+    idtr[1] = 255;
     idtr[3] = 0x10; 
 
     asm volatile ("cli\n lidt %0" : : "m"(idtr));
-    asm volatile ("sti\n");
 
     cpu_addHandler(int_divzero,     0, true);
     cpu_addHandler(int_debug,       1, true);
@@ -51,6 +51,8 @@ void cpu_enableInt()
     cpu_addHandler(int_vminject,    28, true);
     cpu_addHandler(int_vmmcomm,     29, true);
     cpu_addHandler(int_security,    30, true);
+    
+    asm volatile ("sti\n");
 }
 
 void cpu_addHandler(void* func, byte vec, bool istrap)

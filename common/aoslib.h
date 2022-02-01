@@ -123,7 +123,7 @@ static inline const char* strtoupper(const char* in)            { for(int i = 0;
 static inline const char* strtolower(const char* in)            { for(int i = 0; in[i]; i++) tolower(in[i]);        return in; }
 
 static inline bool strcmp(const char* str1, const char* str2)               { for(int i = 0; str1[i] || str2[i]; i++) if(str1[i] != str2[i]) return false; return true; } 
-static inline bool memcmp(const void* buf1, const void* buf2, uintn size)   { for(int i = 0; size; i++) if(((byte*)buf1)[i] != ((byte*)buf2)[i]) return false; return true;}
+static inline bool memcmp(const void* buf1, const void* buf2, uintn size)   { for(int i = 0; i < size; i++) if(((byte*)buf1)[i] != ((byte*)buf2)[i]) return false; return true;}
 
 static inline const char* memchr(const void* buf, uintn size, char val) { for(int i = 0; i < size; i++) if(val == ((char*)buf)[i]) return buf + i; return nullptr; }
 static inline const char* strchr(const char* str, char val)             { for(int i = 0; str[i]; i++) if(val == str[i]) return str + i; return nullptr; } 

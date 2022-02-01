@@ -57,17 +57,17 @@ run: build
 
 	rm -f $(TEMPDIR)/qemu-log.txt
 	qemu-system-x86_64 \
-		-gdb tcp::9000 \
-		-accel tcg,thread=single \
-		-cpu Nehalem, \
+		-machine type=q35,accel=kvm \
+		-cpu host \
+		-smp 8,cores=8,threads=1,sockets=1  \
 		-m 4G \
 		-no-reboot \
 		-drive format=raw,if=pflash,file=/usr/share/ovmf/x64/OVMF.fd,readonly=on \
 		-drive format=raw,if=none,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
 		-drive format=raw,if=none,file=$(ENVDIR)/harddrive.hhd,id=harddisk \
-		-device ide-hd,drive=bootdisk,bootindex=2 \
-		-device ide-hd,drive=harddisk,bootindex=1 \
-		-smp 1 -usb -vga std \
+		-device ide-hd,drive=bootdisk,bootindex=1 \
+		-usb \
+		-vga vmware \
 		-D $(TEMPDIR)/qemu-log.txt \
 		-d cpu_reset \
 		-serial vc \

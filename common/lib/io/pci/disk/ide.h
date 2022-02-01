@@ -1,7 +1,7 @@
 #pragma once
 
 #include <typedef.h>
-#include <lib/pci/pci.h>
+#include <lib/io/pci/pci.h>
 #include <lib/gl/gl.h>
 
 // TODO: simplify this file and comment to get better understanding of whats going on

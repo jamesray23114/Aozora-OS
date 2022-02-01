@@ -29,6 +29,7 @@ typedef enum aozora_memory_type_e
     AOZORA_MEMORY_BAD,
     AOZORA_MEMORY_PERSISTENT,
     AOZORA_MEMORY_GOP,
+    AOZORA_MEMORY_APIC,
 
     //from aozora
 

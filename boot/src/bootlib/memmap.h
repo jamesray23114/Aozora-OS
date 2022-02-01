@@ -6,7 +6,7 @@
 
 #include <typedef.h>
 #include <lib/memory.h>
-#include <lib/pci/pci.h>
+#include <lib/io/pci/pci.h>
 #include <lib/gl/gl.h>
 
 void map_traslate(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) //TODO: account for broken uefi implementations
@@ -45,8 +45,26 @@ void map_traslate(EFI_MEMORY_DESCRIPTOR* memmap, uintn size, uintn descsize) //T
             break;
 
 
-        case EfiConventionalMemory:
         case EfiACPIReclaimMemory:
+
+        maxsize += currmem.NumberOfPages * 4096;
+
+        if(lasttype != AOZORA_MEMORY_APIC)
+        {
+            MEMMAP[i - j + 1].type =          AOZORA_MEMORY_FREE;
+            MEMMAP[i - j + 1].low_address =   currmem.PhysicalStart;
+            MEMMAP[i - j + 1].high_address =  currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+            lasttype = AOZORA_MEMORY_APIC;
+        }
+        else
+        {
+            j++; 
+            MEMMAP[i - j + 1].high_address = currmem.PhysicalStart + currmem.NumberOfPages * 4096;
+            asize--;
+        }
+        break;
+
+        case EfiConventionalMemory:
         case EfiBootServicesCode:
         case EfiBootServicesData:
 
@@ -250,4 +268,16 @@ errornf:
     gl_puts("error allocating aozora-os memory, memory at location 0 - 0x36000 is not free\n\r");
     map_print();
     return 1;
+}
+
+void* get_rsdp(EFI_SYSTEM_TABLE* SystemTable)
+{
+    uintn count = SystemTable->NumberOfTableEntries;
+    void* rsdp = nullptr;
+
+    for(int i = 0 ; i < count; i++)
+        if(guid_equal(SystemTable->ConfigurationTable[i].VendorGuid, (EFI_GUID) ACPI_20_TABLE_GUID))
+            rsdp = SystemTable->ConfigurationTable[i].VendorTable;
+
+    return rsdp;
 }

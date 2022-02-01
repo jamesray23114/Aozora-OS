@@ -1,4 +1,4 @@
-#include <lib/pci/disk/ide.h>
+#include <lib/io/pci/disk/ide.h>
 
 // TODO: rewrite this file to better fit my usecases
 

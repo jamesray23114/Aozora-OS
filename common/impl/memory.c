@@ -20,6 +20,8 @@ static inline const char* _amtts(aozora_memory_type type)
 		return "AOZORA_MEMORY_PERSISTENT";
     case AOZORA_MEMORY_GOP:
 		return "AOZORA_MEMORY_GOP       ";
+    case AOZORA_MEMORY_APIC:
+        return "AOZORA_MEMORY_APIC      ";
     case AOZORA_MEMORY_MAP:
 		return "AOZORA_MEMORY_MAP       ";
     case AOZORA_MEMORY_KERNEL:
@@ -159,6 +161,7 @@ static inline bool validatetype(aozora_memory_type type) // returns true for typ
     case AOZORA_MEMORY_DATA:
     case AOZORA_MEMORY_SHARED:
     case AOZORA_MEMORY_BOOT:
+    case AOZORA_MEMORY_APIC:
         return false;
 
     default:

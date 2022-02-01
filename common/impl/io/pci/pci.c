@@ -1,5 +1,5 @@
-#include <lib/pci/pci.h>
-#include <lib/pci/pci_class.h>
+#include <lib/io/pci/pci.h>
+#include <lib/io/pci/pci_class.h>
 
 static inline uint32 _read(uint32 bus, uint32 device, uint32 func, uint8 offset)
 {

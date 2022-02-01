@@ -1,7 +1,7 @@
 #pragma once
 
 #include <typedef.h>
-#include <lib/io.h>
+#include <lib/io/io.h>
 #include <lib/gl/text.h>
 
 #define PCIMAP pci_memmap

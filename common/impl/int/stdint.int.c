@@ -1,26 +1,23 @@
 #include <lib/cpu.h>
+#include <lib/int/apic.h>
+#include <lib/int/int.h>
 
-#define INTFUNC __attribute__((interrupt)) void
-#define PUTINT(message, ...) printf(message " ran at %x, halting. " __VA_ARGS__ "\n", stack->ip)
-#define HALTINT(name, message, ...) INTFUNC name(frame* stack) { PUTINT(message, __VA_ARGS__); cpu_halt(); }
-#define EHALTINT(name, message, ...) INTFUNC name(frame* stack, uintn err) { PUTINT(message, __VA_ARGS__); cpu_halt(); }
+#define PUTHALT(message, ...) printf(message " ran at %x, halting. " __VA_ARGS__ "\n", stack->ip)
+#define HALTINT(name, message, ...) INTFUNC name(frame* stack) { asm("cli"); PUTHALT(message, __VA_ARGS__); cpu_halt(); }
+#define EHALTINT(name, message, ...) INTFUNC name(frame* stack, uintn err) { asm("cli"); PUTHALT(message, __VA_ARGS__); cpu_halt(); }
 
-typedef struct interrupt_frame_s
+INTFUNC int_stdint(frame* stack)
 {
-    uintn ip;
-    uintn cs;
-    uintn flags;
-    uintn sp;
-    uintn ss;
-} frame;
+    printf("stdint ran\n");
+    EOI();
+}
 
 INTFUNC int_divzero(frame* stack)
 {
-    PUTINT("Divide By Zero Exception (#DE)");
+    printf("Divide By Zero Exception (#DE) ran at %x\n", stack->ip);
     stack->ip += 2; // TODO: dynamically determine the number of bytes we need to skip to resume intruction, may be worthwhile to have this halt instead, as this SHOULD NOT happen
 }
 
-HALTINT(int_stdint, "Standard Interrupt"); // TODO: find way to figure out which interrupt ran this and print it, may need to create a different one for each interrupt
 HALTINT(int_debug, "UNUSED: Debug Exception (#DB)");
 HALTINT(int_nmi, "TODO: Non-Maskable Interrupt (NMI)");
 HALTINT(int_breakpoint, "TODO: Breakpoint (#BP)");
@@ -46,5 +43,5 @@ EHALTINT(int_security, "UNUSED: Security Exception (#SX)");
 
 #undef EHALTFUNC
 #undef HALTFUNC
-#undef PUTINT
+#undef PUTHALT
 #undef INTFUNC
