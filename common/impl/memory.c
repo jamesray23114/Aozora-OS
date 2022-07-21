@@ -204,7 +204,7 @@ void* map_alloc(uintn size, aozora_memory_type type)
     return 0;
 }
 
-void map_ree(void* ptr)
+void map_free(void* ptr)
 {
     uintn mapsize = MEMMAP[0].low_address;
     uintn maxsize = MEMMAP[0].high_address;

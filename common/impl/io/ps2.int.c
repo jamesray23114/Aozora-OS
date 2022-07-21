@@ -55,6 +55,7 @@ INTFUNC int_keyboard(frame* stack)
         KC(KEY_SPACE, ' ');
 
     default:
+        printf("-%x-", scancode);
         break;
     }
 

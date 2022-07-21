@@ -150,12 +150,12 @@ acpi_apic_table madt_parse(void* madt)
                 break; 
 
             case 2: // io apic interrupt source override
-                printf("irq:\n\t" "isrc: %d\n\t" "bsrc: %d\n\t" "flags: %b\n\t" "gsi: %d\n",
-                    (uintn) current->ioapic_source_override.irq_source,
-                    (uintn) current->ioapic_source_override.bus_source,
-                    (uintn) current->ioapic_source_override.flags,
-                    (uintn) current->ioapic_source_override.global_system_interrupt
-                );
+                //printf("irq:\n\t" "isrc: %d\n\t" "bsrc: %d\n\t" "flags: %b\n\t" "gsi: %d\n",
+                //    (uintn) current->ioapic_source_override.irq_source,
+                //    (uintn) current->ioapic_source_override.bus_source,
+                //    (uintn) current->ioapic_source_override.flags,
+                //    (uintn) current->ioapic_source_override.global_system_interrupt
+                //);
 
 
                 NEXTENTRY();
@@ -200,3 +200,4 @@ void madt_print(acpi_apic_table info)
         info.sys_interrupt_base
     );
 }
+

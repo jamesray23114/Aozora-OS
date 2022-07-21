@@ -73,7 +73,7 @@ static inline intn imin(intn a, intn b)                         { return a < b ?
 // static inline f64  iroot(f64 in, intn to);
 // static inline f64  root(f64 in, f64 to);
 static inline f64  sqrt(f64 in) { __builtin_sqrtf(in); }
-static inline intn isqrt(intn in) 
+static inline intn isqrt(intn in)  
 {
     if (in == 0 || in == 1)
         return in;

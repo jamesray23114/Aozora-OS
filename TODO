@@ -1,14 +1,15 @@
 
 going fowards:
 [~] setup interrupts
-    [ ] setup apic to handle external interrupts
+    [x] setup (io)apic to handle external interrupts
     [x] create handlers for all standard exceptions
     [ ] create debugger using int3
-    [ ] keyboard io
+    [x] keyboard io
 [x] disk io
-[ ] interact with acpi
+[x] interact with acpi
 [ ] load and reset gdt 
 [ ] setup paging
+[ ] make vt console
 [ ] impliment file system + linux jfs tool
 [ ] kernel loader / exit boot loader fully
 [ ] cstdlib
@@ -36,9 +37,13 @@ refactoring: jan:feb 2021
 [ ] rethink how malloc and free work, allow for resizing of memmap. 
 
 OS checklist:
-[ ] make vt console and window manager
+[ ] make vt console 
+[ ] make window manager  
 [ ] get and set time
 [ ] interaction with text file
+    [ ] cat
+    [ ] echo / write
+    [ ] vi / text editor
 [ ] interactive calculator
 [ ] power computer off and reboot
 [ ] load and display image

@@ -11,7 +11,7 @@ typedef struct aozora_memory_s aozora_memory;
 void    map_split(uintn at, uintn size, const byte loc);
 void    map_add(aozora_memory memory); // does no check to ensure memory can fit in memmap
 void*   map_alloc(uintn size, aozora_memory_type type);
-void    map_ree(void* ptr);
+void    map_free(void* ptr);
 void    map_print();
 
 void    hd_printMap(void* mapptr);

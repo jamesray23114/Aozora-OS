@@ -15,6 +15,7 @@
 
 #include <aoslib.h>
 
+// TODO: remove the need for these global variables
 EFI_SYSTEM_TABLE*   ST;
 EFI_BOOT_SERVICES*  BS;
 
@@ -42,8 +43,10 @@ void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 
     ps2_init();
 
-    asm("sti");
+    //pci_printAllDevices();
+    //map_print();
 
+    asm ("sti\n");
     while (true);
 }
 
