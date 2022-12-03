@@ -62,7 +62,7 @@ static inline intn imin(intn a, intn b)                         { return a < b ?
 // static inline f64  arccos(f64 in);
 // static inline f64  arcsin(f64 in);
 // static inline f64  arctan(f64 in);
-// static inline f64  angle(f64 x, f64 y); // TODO: atan2, retuns angle from between point at (x, y) and line at y = 0             
+// static inline f64  angle(f64 x, f64 y); // TODO: atan2, retuns angle between point at (x, y) and line at y = 0             
 // static inline f64  dist(f64 x1, f64 y1, f64 x2, f64 y2); //TODO?: add v2d
  
 // static inline f64  ipow(f64 in, intn to);

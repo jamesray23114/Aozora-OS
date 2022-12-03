@@ -1,4 +1,0 @@
-idt    (8b)  -> 0x1000 to 
-memmap (24b) -> 0x08000 to 0x14480  : 2048 entries
-pci    (14b) -> 0x14480 to 0x15280  : 256  entires
-gl     (24b) -> 0x33760 to 0x33778  : 1    entry

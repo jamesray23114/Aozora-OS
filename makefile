@@ -63,9 +63,9 @@ run: build
 		-m 4G \
 		-no-reboot \
 		-drive format=raw,if=pflash,file=/usr/share/ovmf/x64/OVMF.fd,readonly=on \
-		-drive format=raw,if=none,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
-		-drive format=raw,if=none,file=$(ENVDIR)/harddrive.hhd,id=harddisk \
-		-device ide-hd,drive=bootdisk,bootindex=1 \
+		-drive format=raw,if=ide,file=$(ENVDIR)/Aozora-OS.iso,id=bootdisk \
+		-drive format=raw,if=ide,file=$(ENVDIR)/harddrive.hhd,id=harddisk \
+		#-device ide-hd,drive=bootdisk,bootindex=1 \
 		-usb \
 		-vga vmware \
 		-D $(TEMPDIR)/qemu-log.txt \

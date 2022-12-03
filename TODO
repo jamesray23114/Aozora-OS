@@ -7,8 +7,8 @@ going fowards:
     [x] keyboard io
 [x] disk io
 [x] interact with acpi
-[ ] load and reset gdt 
-[ ] setup paging
+[x] load and reset gdt 
+[x] setup paging
 [ ] make vt console
 [ ] impliment file system + linux jfs tool
 [ ] kernel loader / exit boot loader fully

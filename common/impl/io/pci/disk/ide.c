@@ -291,7 +291,7 @@ void ide_readSectors(byte drive, uintn location, uintn sectors, byte* buffer)
     uint16* wbuffer = (uint16*) buffer;
     for (int i = 0; i < sectors * words; i++) 
     {
-       if(err = ide_poll(channel, 1)) { gl_puts("error\n"); return; } 
+       if(err = ide_poll(channel, 1)) { gl_puts("ide_read error\n"); return; } 
         wbuffer[i] = inw(bus);      
     }
 }

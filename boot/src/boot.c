@@ -23,6 +23,7 @@ void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 {
     ST = SystemTable;
     BS = SystemTable->BootServices;
+    
 
     BTSV->SetWatchdogTimer(0, 0, 0, null);
     COUT->ClearScreen(COUT);
@@ -43,8 +44,13 @@ void efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 
     ps2_init();
 
-    //pci_printAllDevices();
+    //pci_printAllDevicesExt();
     //map_print();
+    //madt_print(madt);
+
+    char* c = map_alloc(2048, AOZORA_MEMORY_DATA);
+
+    printf("%s\n", c);
 
     asm ("sti\n");
     while (true);
